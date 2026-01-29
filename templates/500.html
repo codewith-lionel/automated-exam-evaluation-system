@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% set hide_sidebar = True %}
+{% set hide_navbar = True %}
+
+{% block title %}500 - Server Error{% endblock %}
+
+{% block body %}
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-message">
+            Something went wrong on our end. We're working to fix the issue. 
+            Please try again later.
+        </p>
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary btn-lg">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+            <button class="btn btn-secondary btn-lg" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> Reload Page
+            </button>
+        </div>
+        
+        <div style="margin-top: 3rem; padding: 1.5rem; background-color: var(--secondary-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg);">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
+                <i class="fas fa-info-circle"></i> What happened?
+            </h3>
+            <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary);">
+                <li style="padding: 0.5rem 0; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-circle" style="font-size: 0.5rem; margin-top: 0.5rem;"></i>
+                    <span>The server encountered an unexpected error</span>
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-circle" style="font-size: 0.5rem; margin-top: 0.5rem;"></i>
+                    <span>Our team has been notified and is working on a fix</span>
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; gap: 0.75rem;">
+                    <i class="fas fa-circle" style="font-size: 0.5rem; margin-top: 0.5rem;"></i>
+                    <span>Try refreshing the page or coming back later</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                If the problem persists, please contact support at 
+                <a href="mailto:support@exameval.com" style="color: var(--accent-blue);">
+                    support@exameval.com
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

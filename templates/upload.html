@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Papers - Automated Exam Evaluation{% endblock %}
+
+{% block content %}
+<div class="upload-section">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Upload Exam Papers</h1>
+            <p class="page-subtitle">Upload student answer sheets for automated evaluation</p>
+        </div>
+    </div>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <!-- File Upload Area -->
+        <div class="card mb-lg">
+            <div class="card-body">
+                <div class="file-upload" id="uploadArea">
+                    <input 
+                        type="file" 
+                        id="fileInput" 
+                        accept=".pdf,.jpg,.jpeg,.png" 
+                        multiple 
+                        style="display: none;"
+                    >
+                    <div class="file-upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="file-upload-text">
+                        Drag & drop files here or click to browse
+                    </div>
+                    <div class="file-upload-hint">
+                        Supported formats: PDF, JPG, PNG (Max 10MB per file)
+                    </div>
+                </div>
+                
+                <div id="fileList" class="mt-lg"></div>
+            </div>
+        </div>
+
+        <!-- Exam Details -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Exam Details</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="examName" class="form-label required">Exam Name</label>
+                            <input 
+                                type="text" 
+                                id="examName" 
+                                class="form-input" 
+                                placeholder="e.g., Mid-term Examination"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="examDate" class="form-label required">Exam Date</label>
+                            <input 
+                                type="date" 
+                                id="examDate" 
+                                class="form-input"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="subject" class="form-label required">Subject</label>
+                            <input 
+                                type="text" 
+                                id="subject" 
+                                class="form-input" 
+                                placeholder="e.g., Mathematics"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="totalMarks" class="form-label required">Total Marks</label>
+                            <input 
+                                type="number" 
+                                id="totalMarks" 
+                                class="form-input" 
+                                placeholder="e.g., 100"
+                                min="1"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="col col-12">
+                        <div class="form-group">
+                            <label for="answerKey" class="form-label">Answer Key (Optional)</label>
+                            <textarea 
+                                id="answerKey" 
+                                class="form-textarea" 
+                                placeholder="Provide model answers or answer key..."
+                                rows="4"
+                            ></textarea>
+                            <div class="form-help">
+                                Providing an answer key will improve evaluation accuracy
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluation Settings -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Evaluation Settings</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="evaluationMode" class="form-label">Evaluation Mode</label>
+                            <select id="evaluationMode" class="form-select">
+                                <option value="strict">Strict Matching</option>
+                                <option value="lenient" selected>Lenient Matching</option>
+                                <option value="semantic">Semantic Analysis</option>
+                            </select>
+                            <div class="form-help">
+                                Choose how strictly answers are evaluated
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col col-md-6">
+                        <div class="form-group">
+                            <label for="passingScore" class="form-label">Passing Score (%)</label>
+                            <input 
+                                type="number" 
+                                id="passingScore" 
+                                class="form-input" 
+                                value="60"
+                                min="0"
+                                max="100"
+                            >
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="generateFeedback" class="form-checkbox" checked>
+                    <label for="generateFeedback">Generate detailed feedback for each answer</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="detectPlagiarism" class="form-checkbox">
+                    <label for="detectPlagiarism">Check for plagiarism (slower processing)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-end gap-md">
+            <a href="/dashboard" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg" id="uploadButton" disabled>
+                <i class="fas fa-upload"></i> Upload & Evaluate
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Tips Card -->
+<div class="card mt-xl" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+    <div class="card-header">
+        <h3 class="card-title">💡 Tips for Better Results</h3>
+    </div>
+    <div class="card-body">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="padding: 0.5rem 0; display: flex; gap: 1rem;">
+                <i class="fas fa-check-circle" style="color: var(--accent-green); margin-top: 0.25rem;"></i>
+                <span>Ensure scanned papers are clear and readable</span>
+            </li>
+            <li style="padding: 0.5rem 0; display: flex; gap: 1rem;">
+                <i class="fas fa-check-circle" style="color: var(--accent-green); margin-top: 0.25rem;"></i>
+                <span>Upload high-resolution images (minimum 300 DPI recommended)</span>
+            </li>
+            <li style="padding: 0.5rem 0; display: flex; gap: 1rem;">
+                <i class="fas fa-check-circle" style="color: var(--accent-green); margin-top: 0.25rem;"></i>
+                <span>Provide answer keys for more accurate evaluations</span>
+            </li>
+            <li style="padding: 0.5rem 0; display: flex; gap: 1rem;">
+                <i class="fas fa-check-circle" style="color: var(--accent-green); margin-top: 0.25rem;"></i>
+                <span>Use consistent naming conventions for easy organization</span>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

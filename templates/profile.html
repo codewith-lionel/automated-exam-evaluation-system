@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Automated Exam Evaluation{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">JD</div>
+        <div class="profile-info">
+            <h1 class="profile-name" id="profileName">John Doe</h1>
+            <p class="profile-role" id="profileRole">Student</p>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="profile-stat-value">24</div>
+                    <div class="profile-stat-label">Exams Taken</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">85%</div>
+                    <div class="profile-stat-label">Average Score</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">18</div>
+                    <div class="profile-stat-label">Passed</div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="editProfile()">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="profile-content">
+        <!-- Sidebar -->
+        <div>
+            <div class="card mb-lg">
+                <div class="card-header">
+                    <h3 class="card-title">Personal Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="profile-field">
+                        <span class="profile-field-label">Email</span>
+                        <span class="profile-field-value" id="profileEmail">john.doe@example.com</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Phone</span>
+                        <span class="profile-field-value" id="profilePhone">+1 234 567 8900</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Student ID</span>
+                        <span class="profile-field-value" id="profileStudentId">STU-2024-001</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Department</span>
+                        <span class="profile-field-value" id="profileDepartment">Computer Science</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Joined</span>
+                        <span class="profile-field-value" id="profileJoined">January 2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Account Settings</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-block" onclick="changePassword()">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn btn-secondary btn-block" onclick="notificationSettings()">
+                            <i class="fas fa-bell"></i> Notifications
+                        </button>
+                        <button class="btn btn-secondary btn-block" onclick="privacySettings()">
+                            <i class="fas fa-shield-alt"></i> Privacy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div>
+            <!-- Recent Activity -->
+            <div class="card mb-lg">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                    <a href="/results" class="btn btn-sm btn-ghost">View All</a>
+                </div>
+                <div class="card-body">
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon success">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Completed Mathematics Exam</div>
+                                <div class="activity-meta">Score: 92% • 15 questions</div>
+                            </div>
+                            <div class="activity-time">2 hours ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon info">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Uploaded Physics Paper</div>
+                                <div class="activity-meta">Awaiting evaluation</div>
+                            </div>
+                            <div class="activity-time">1 day ago</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon success">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Achieved High Score</div>
+                                <div class="activity-meta">Chemistry Exam • 95%</div>
+                            </div>
+                            <div class="activity-time">3 days ago</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="card mb-lg">
+                <div class="card-header">
+                    <h3 class="card-title">Performance Trend</h3>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px;">
+                        <canvas id="performanceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🏆 Achievements</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col col-md-4 col-sm-6">
+                            <div style="text-align: center; padding: 1rem; background-color: var(--tertiary-bg); border-radius: var(--radius-md); margin-bottom: 1rem;">
+                                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎯</div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Perfect Score</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">Achieved 100%</div>
+                            </div>
+                        </div>
+                        <div class="col col-md-4 col-sm-6">
+                            <div style="text-align: center; padding: 1rem; background-color: var(--tertiary-bg); border-radius: var(--radius-md); margin-bottom: 1rem;">
+                                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Quick Learner</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">10 exams completed</div>
+                            </div>
+                        </div>
+                        <div class="col col-md-4 col-sm-6">
+                            <div style="text-align: center; padding: 1rem; background-color: var(--tertiary-bg); border-radius: var(--radius-md); margin-bottom: 1rem;">
+                                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⭐</div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">High Achiever</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">85%+ average</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="editProfileModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Profile</h3>
+            <button class="modal-close" onclick="modal.close('editProfileModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="editName" class="form-label required">Full Name</label>
+                    <input type="text" id="editName" class="form-input" value="John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editEmail" class="form-label required">Email</label>
+                    <input type="email" id="editEmail" class="form-input" value="john.doe@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPhone" class="form-label">Phone</label>
+                    <input type="tel" id="editPhone" class="form-input" value="+1 234 567 8900">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDepartment" class="form-label">Department</label>
+                    <input type="text" id="editDepartment" class="form-input" value="Computer Science">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="modal.close('editProfileModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize performance trend chart
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('performanceTrendChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [{
+                    label: 'Score %',
+                    data: [75, 82, 78, 88, 92, 85],
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim(),
+                    backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: {
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim()
+                        },
+                        ticks: {
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim()
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim()
+                        },
+                        ticks: {
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim()
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+
+function editProfile() {
+    modal.open('editProfileModal');
+}
+
+function saveProfile() {
+    loader.show('Saving profile...');
+    setTimeout(() => {
+        loader.hide();
+        toast.success('Profile updated successfully');
+        modal.close('editProfileModal');
+    }, 1000);
+}
+
+function changePassword() {
+    toast.info('Change password feature coming soon');
+}
+
+function notificationSettings() {
+    toast.info('Notification settings feature coming soon');
+}
+
+function privacySettings() {
+    toast.info('Privacy settings feature coming soon');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Result Details - Automated Exam Evaluation{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-lg">
+    <a href="/results" class="btn btn-ghost">
+        <i class="fas fa-arrow-left"></i> Back to Results
+    </a>
+</div>
+
+<!-- Result Header -->
+<div class="result-detail-header">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+        <div>
+            <h1 class="page-title" id="resultTitle" style="margin-bottom: 0.5rem;">Evaluation Result</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span class="badge badge-success">Completed</span>
+                <span class="text-secondary">Evaluated on <span id="evaluationDate">--</span></span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary" onclick="exportResult('{{ result_id }}', 'pdf')">
+                <i class="fas fa-download"></i> Export PDF
+            </button>
+            <button class="btn btn-ghost" onclick="window.print()">
+                <i class="fas fa-print"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="result-detail-meta" id="resultMeta">
+        <div class="result-detail-meta-item">
+            <div class="result-detail-meta-label">Score</div>
+            <div class="result-detail-meta-value">--%</div>
+        </div>
+        <div class="result-detail-meta-item">
+            <div class="result-detail-meta-label">Total Questions</div>
+            <div class="result-detail-meta-value">--</div>
+        </div>
+        <div class="result-detail-meta-item">
+            <div class="result-detail-meta-label">Correct</div>
+            <div class="result-detail-meta-value">--</div>
+        </div>
+        <div class="result-detail-meta-item">
+            <div class="result-detail-meta-label">Incorrect</div>
+            <div class="result-detail-meta-value">--</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="result-detail-content">
+    <!-- Answers List -->
+    <div>
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Detailed Answers</h3>
+                <div class="tabs" style="border: none; margin: 0;">
+                    <div class="tab active">All</div>
+                    <div class="tab">Correct</div>
+                    <div class="tab">Incorrect</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-answers" id="answersList">
+            <div class="card">
+                <div class="card-body">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <div class="empty-state-title">Loading answers...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="result-sidebar">
+        <!-- Score Chart -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Score Breakdown</h3>
+            </div>
+            <div class="card-body">
+                <div style="height: 250px; margin-bottom: 1rem;">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+                <div class="score-breakdown" id="scoreBreakdown">
+                    <div class="score-breakdown-item">
+                        <span>Correct Answers</span>
+                        <span>--</span>
+                    </div>
+                    <div class="score-breakdown-item">
+                        <span>Partial Credit</span>
+                        <span>--</span>
+                    </div>
+                    <div class="score-breakdown-item">
+                        <span>Incorrect Answers</span>
+                        <span>--</span>
+                    </div>
+                    <div class="score-breakdown-item">
+                        <span>Total Score</span>
+                        <span>--%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exam Info -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3 class="card-title">Exam Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="profile-field">
+                    <span class="profile-field-label">Exam Name</span>
+                    <span class="profile-field-value" id="examName">--</span>
+                </div>
+                <div class="profile-field">
+                    <span class="profile-field-label">Subject</span>
+                    <span class="profile-field-value" id="examSubject">--</span>
+                </div>
+                <div class="profile-field">
+                    <span class="profile-field-label">Date</span>
+                    <span class="profile-field-value" id="examDate">--</span>
+                </div>
+                <div class="profile-field">
+                    <span class="profile-field-label">Total Marks</span>
+                    <span class="profile-field-value" id="totalMarks">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Actions</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="/feedback/{{ result_id }}" class="btn btn-secondary btn-block">
+                        <i class="fas fa-comment"></i> Add Feedback
+                    </a>
+                    <button class="btn btn-secondary btn-block" onclick="exportResult('{{ result_id }}', 'xlsx')">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <button class="btn btn-danger btn-block" onclick="deleteResult('{{ result_id }}')">
+                        <i class="fas fa-trash"></i> Delete Result
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Insights -->
+<div class="card mt-xl">
+    <div class="card-header">
+        <h3 class="card-title">📊 Performance Insights</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col col-md-4">
+                <div style="padding: 1rem; text-align: center; background-color: var(--tertiary-bg); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-green); margin-bottom: 0.5rem;">
+                        Strong Areas
+                    </div>
+                    <div style="color: var(--text-secondary);" id="strongAreas">
+                        Calculating...
+                    </div>
+                </div>
+            </div>
+            <div class="col col-md-4">
+                <div style="padding: 1rem; text-align: center; background-color: var(--tertiary-bg); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-yellow); margin-bottom: 0.5rem;">
+                        Areas to Improve
+                    </div>
+                    <div style="color: var(--text-secondary);" id="weakAreas">
+                        Calculating...
+                    </div>
+                </div>
+            </div>
+            <div class="col col-md-4">
+                <div style="padding: 1rem; text-align: center; background-color: var(--tertiary-bg); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                        Overall Performance
+                    </div>
+                    <div style="color: var(--text-secondary);" id="overallPerformance">
+                        Calculating...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const result_id = '{{ result_id }}';
+</script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

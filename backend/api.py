@@ -20,8 +20,15 @@ from config import Config
 
 api_bp = Blueprint('api', __name__)
 
-# Initialize NLP evaluator
-nlp_evaluator = NLPEvaluator()
+# Initialize NLP evaluator lazily
+_nlp_evaluator = None
+
+def get_nlp_evaluator():
+    """Get or create NLP evaluator instance."""
+    global _nlp_evaluator
+    if _nlp_evaluator is None:
+        _nlp_evaluator = NLPEvaluator()
+    return _nlp_evaluator
 
 @api_bp.route('/api/dashboard/stats', methods=['GET'])
 @login_required
@@ -159,6 +166,7 @@ def evaluate_exam():
             return jsonify({'success': False, 'message': 'Unauthorized'}), 403
         
         # Evaluate answers
+        nlp_evaluator = get_nlp_evaluator()
         results = nlp_evaluator.evaluate_multiple_answers(questions_data)
         
         # Save questions to database
@@ -176,6 +184,7 @@ def evaluate_exam():
             )
         
         # Generate feedback
+        nlp_evaluator = get_nlp_evaluator()
         feedback = nlp_evaluator.generate_feedback(results)
         
         # Save feedback

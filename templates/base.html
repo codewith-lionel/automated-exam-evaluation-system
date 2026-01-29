@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Automated Examination Evaluation System - AI-powered exam grading">
+    <title>{% block title %}Automated Exam Evaluation{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block body %}
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        {% if not hide_sidebar %}
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="fas fa-graduation-cap"></i> ExamEval
+                </div>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Main</div>
+                    <a href="/dashboard" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-home"></i>
+                        <span class="sidebar-link-text">Dashboard</span>
+                    </a>
+                    <a href="/upload" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-upload"></i>
+                        <span class="sidebar-link-text">Upload Papers</span>
+                    </a>
+                    <a href="/results" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-chart-bar"></i>
+                        <span class="sidebar-link-text">Results</span>
+                    </a>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Management</div>
+                    <a href="/feedback" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-comments"></i>
+                        <span class="sidebar-link-text">Feedback</span>
+                    </a>
+                    <a href="/profile" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-user"></i>
+                        <span class="sidebar-link-text">Profile</span>
+                    </a>
+                </div>
+                
+                {% if user and user.role == 'admin' %}
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Admin</div>
+                    <a href="/admin/users" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-users"></i>
+                        <span class="sidebar-link-text">Users</span>
+                    </a>
+                    <a href="/admin/settings" class="sidebar-link">
+                        <i class="sidebar-link-icon fas fa-cog"></i>
+                        <span class="sidebar-link-text">Settings</span>
+                    </a>
+                </div>
+                {% endif %}
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p class="text-secondary" style="font-size: 0.75rem; text-align: center;">
+                    &copy; 2024 ExamEval<br>
+                    Version 1.0.0
+                </p>
+            </div>
+        </aside>
+        
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        {% endif %}
+        
+        <!-- Main Content -->
+        <main class="main-content {% if not hide_sidebar %}with-sidebar{% endif %}">
+            <!-- Navbar -->
+            {% if not hide_navbar %}
+            <nav class="navbar">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    {% if not hide_sidebar %}
+                    <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    {% endif %}
+                    
+                    <a href="/" class="navbar-brand">
+                        <i class="navbar-brand-icon fas fa-graduation-cap"></i>
+                        <span>ExamEval</span>
+                    </a>
+                </div>
+                
+                <div class="navbar-menu">
+                    <!-- Search Bar -->
+                    <div class="navbar-search">
+                        <i class="navbar-search-icon fas fa-search"></i>
+                        <input type="text" id="navbarSearch" placeholder="Search..." autocomplete="off">
+                    </div>
+                    
+                    <div class="navbar-actions">
+                        <!-- Theme Toggle -->
+                        <button class="navbar-icon-btn" id="themeToggle" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <button class="navbar-icon-btn" id="notificationBtn" aria-label="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge-notification">3</span>
+                        </button>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <div class="navbar-user dropdown-toggle">
+                                <div class="navbar-user-avatar" id="userAvatar">U</div>
+                                <div class="navbar-user-info">
+                                    <div class="navbar-user-name" id="userName">User</div>
+                                    <div class="navbar-user-role" id="userRole">Student</div>
+                                </div>
+                                <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text-secondary);"></i>
+                            </div>
+                            <div class="dropdown-menu">
+                                <a href="/profile" class="dropdown-item">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                                <a href="/settings" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Settings
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            {% endif %}
+            
+            <!-- Page Content -->
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% endblock %}
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- JavaScript Files -->
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

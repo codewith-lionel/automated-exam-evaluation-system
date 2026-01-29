@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Results - Automated Exam Evaluation{% endblock %}
+
+{% block content %}
+<div class="page-header results-header">
+    <div>
+        <h1 class="page-title">Evaluation Results</h1>
+        <p class="page-subtitle">View and manage all examination evaluations</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="applyFilters()">
+            <i class="fas fa-filter"></i> Apply Filters
+        </button>
+        <a href="/upload" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload New
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="results-filters">
+    <div class="filter-group">
+        <label for="searchResults">
+            <i class="fas fa-search"></i> Search
+        </label>
+        <input 
+            type="text" 
+            id="searchResults" 
+            placeholder="Search by student name..."
+            style="min-width: 250px;"
+        >
+    </div>
+    
+    <div class="filter-group">
+        <label for="filterStatus">Status</label>
+        <select id="filterStatus">
+            <option value="">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="review">Under Review</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label for="filterSubject">Subject</label>
+        <select id="filterSubject">
+            <option value="">All Subjects</option>
+            <option value="mathematics">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="english">English</option>
+            <option value="history">History</option>
+        </select>
+    </div>
+    
+    <div class="filter-group">
+        <label for="filterDate">Date Range</label>
+        <input type="date" id="filterDate">
+    </div>
+</div>
+
+<!-- Results Grid -->
+<div class="results-grid" id="resultsGrid">
+    <!-- Loading state -->
+    <div class="card" style="grid-column: 1/-1;">
+        <div class="card-body">
+            <div class="empty-state">
+                <div class="empty-state-icon">⏳</div>
+                <div class="empty-state-title">Loading results...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Summary -->
+<div class="card mt-xl">
+    <div class="card-header">
+        <h3 class="card-title">Summary Statistics</h3>
+        <button class="btn btn-sm btn-ghost" onclick="exportStats('pdf')">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col col-md-3 col-sm-6">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent-blue);">--</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Total Evaluated</div>
+                </div>
+            </div>
+            <div class="col col-md-3 col-sm-6">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent-green);">--%</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Pass Rate</div>
+                </div>
+            </div>
+            <div class="col col-md-3 col-sm-6">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent-yellow);">--%</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Average Score</div>
+                </div>
+            </div>
+            <div class="col col-md-3 col-sm-6">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">--</div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Highest Score</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

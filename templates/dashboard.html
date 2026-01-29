@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Automated Exam Evaluation{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Overview of your examination evaluation activities</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="refreshDashboard()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <a href="/upload" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload Papers
+        </a>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="dashboard-kpis" id="dashboardKPIs">
+    <div class="kpi-card">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-value">--</div>
+        <div class="kpi-label">Total Evaluations</div>
+    </div>
+    
+    <div class="kpi-card">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-value">--%</div>
+        <div class="kpi-label">Average Score</div>
+    </div>
+    
+    <div class="kpi-card">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-value">--</div>
+        <div class="kpi-label">Students Evaluated</div>
+    </div>
+    
+    <div class="kpi-card">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-value">--</div>
+        <div class="kpi-label">Pending Reviews</div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="dashboard-charts">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Performance Over Time</h3>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Score Distribution</h3>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="scoreDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="dashboard-recent">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+            <a href="/results" class="btn btn-sm btn-ghost">View All</a>
+        </div>
+        <div class="card-body" id="recentActivity">
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-title">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="/upload" class="btn btn-secondary btn-block">
+                        <i class="fas fa-upload"></i> Upload New Papers
+                    </a>
+                    <a href="/results" class="btn btn-secondary btn-block">
+                        <i class="fas fa-chart-bar"></i> View All Results
+                    </a>
+                    <button class="btn btn-secondary btn-block" onclick="exportStats('pdf')">
+                        <i class="fas fa-download"></i> Export Statistics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">System Status</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="d-flex justify-between align-center">
+                        <span>OCR Engine</span>
+                        <span class="badge badge-success">Active</span>
+                    </div>
+                    <div class="d-flex justify-between align-center">
+                        <span>NLP Model</span>
+                        <span class="badge badge-success">Active</span>
+                    </div>
+                    <div class="d-flex justify-between align-center">
+                        <span>Database</span>
+                        <span class="badge badge-success">Connected</span>
+                    </div>
+                    <div class="d-flex justify-between align-center">
+                        <span>Storage</span>
+                        <span class="badge badge-info">85% Available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

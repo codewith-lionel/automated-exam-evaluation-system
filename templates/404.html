@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% set hide_sidebar = True %}
+{% set hide_navbar = True %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block body %}
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-message">
+            Oops! The page you're looking for doesn't exist. 
+            It might have been moved or deleted.
+        </p>
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary btn-lg">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+            <button class="btn btn-secondary btn-lg" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </button>
+        </div>
+        
+        <div style="margin-top: 3rem;">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Need help? Try these:</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/dashboard" style="color: var(--accent-blue);">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="/upload" style="color: var(--accent-blue);">
+                    <i class="fas fa-upload"></i> Upload
+                </a>
+                <a href="/results" style="color: var(--accent-blue);">
+                    <i class="fas fa-chart-bar"></i> Results
+                </a>
+                <a href="/profile" style="color: var(--accent-blue);">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

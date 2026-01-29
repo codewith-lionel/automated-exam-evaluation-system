@@ -216,7 +216,7 @@ function initUpload() {
                 reject(new Error('Upload failed'));
             });
 
-            xhr.open('POST', `${API_BASE_URL}/evaluate/upload`);
+            xhr.open('POST', `${API_BASE_URL}/upload`);
             xhr.send(formData);
         });
     }

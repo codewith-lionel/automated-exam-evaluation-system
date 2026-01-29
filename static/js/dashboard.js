@@ -18,7 +18,7 @@ async function initDashboard() {
         loader.show('Loading dashboard...');
         
         // Load dashboard data
-        const data = await api.get('/dashboard/stats');
+        const data = await api.get('/dashboard');
         
         // Render KPIs
         renderKPIs(data.kpis);

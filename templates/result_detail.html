@@ -200,7 +200,7 @@
 
 {% block extra_js %}
 <script>
-    const result_id = '{{ evaluation_id }}';
+    window.result_id = '{{ evaluation_id }}';
 </script>
 <script src="{{ url_for('static', filename='js/results.js') }}"></script>
 {% endblock %}

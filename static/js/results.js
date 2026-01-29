@@ -13,7 +13,7 @@ async function initResultsList() {
     try {
         loader.show('Loading results...');
         
-        const response = await api.get('/evaluate/results');
+        const response = await api.get('/evaluate');
         
         if (response.success) {
             renderResults(response.results);
@@ -142,7 +142,7 @@ async function applyFilters() {
     if (date) params.append('date', date);
 
     try {
-        const response = await api.get(`/evaluate/results?${params.toString()}`);
+        const response = await api.get(`/evaluate?${params.toString()}`);
         
         if (response.success) {
             renderResults(response.results);
@@ -159,7 +159,10 @@ function viewResult(id) {
 
 // Result Detail Page
 async function initResultDetail() {
-    if (typeof result_id === 'undefined') {
+    let result_id;
+    if (typeof window.result_id !== 'undefined') {
+        result_id = window.result_id;
+    } else {
         const pathParts = window.location.pathname.split('/');
         result_id = pathParts[pathParts.length - 1];
     }
@@ -167,7 +170,7 @@ async function initResultDetail() {
     try {
         loader.show('Loading result details...');
         
-        const response = await api.get(`/evaluate/results/${result_id}`);
+        const response = await api.get(`/api/evaluate/results/${result_id}`);
         
         if (response.success) {
             renderResultDetail(response.result);
@@ -341,7 +344,7 @@ async function exportResult(resultId, format = 'pdf') {
     try {
         loader.show('Exporting result...');
         
-        const response = await api.get(`/evaluate/results/${resultId}/export?format=${format}`);
+        const response = await api.get(`/evaluate/${resultId}/export?format=${format}`);
         
         if (response.success) {
             downloadFile(response.url, `result-${resultId}.${format}`);
@@ -365,7 +368,7 @@ async function deleteResult(resultId) {
     try {
         loader.show('Deleting result...');
         
-        const response = await api.delete(`/evaluate/results/${resultId}`);
+        const response = await api.delete(`/evaluate/${resultId}`);
         
         if (response.success) {
             toast.success('Result deleted successfully');

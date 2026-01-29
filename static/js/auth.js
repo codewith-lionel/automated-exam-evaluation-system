@@ -77,12 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     toast.error(response.message || 'Login failed');
                     loginSubmitBtn.disabled = false;
-                    loginSubmitBtn.innerHTML = 'Login';
+                    loginSubmitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
                 }
             } catch (error) {
                 toast.error(error.message || 'Login failed. Please try again.');
                 loginSubmitBtn.disabled = false;
-                loginSubmitBtn.innerHTML = 'Login';
+                loginSubmitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
             }
         });
     }
@@ -135,12 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     toast.error(response.message || 'Signup failed');
                     signupSubmitBtn.disabled = false;
-                    signupSubmitBtn.innerHTML = 'Sign Up';
+                    signupSubmitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up';
                 }
             } catch (error) {
                 toast.error(error.message || 'Signup failed. Please try again.');
                 signupSubmitBtn.disabled = false;
-                signupSubmitBtn.innerHTML = 'Sign Up';
+                signupSubmitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up';
             }
         });
     }

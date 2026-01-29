@@ -159,18 +159,18 @@ function viewResult(id) {
 
 // Result Detail Page
 async function initResultDetail() {
-    let result_id;
+    let evaluation_id;
     if (typeof window.result_id !== 'undefined') {
-        result_id = window.result_id;
+        evaluation_id = window.result_id;
     } else {
         const pathParts = window.location.pathname.split('/');
-        result_id = pathParts[pathParts.length - 1];
+        evaluation_id = pathParts[pathParts.length - 1];
     }
 
     try {
         loader.show('Loading result details...');
         
-        const response = await api.get(`/api/evaluate/results/${result_id}`);
+        const response = await api.get(`/results/${evaluation_id}`);
         
         if (response.success) {
             renderResultDetail(response.result);

@@ -166,7 +166,7 @@ function initUpload() {
                     
                     // Redirect to results after a delay
                     setTimeout(() => {
-                        window.location.href = `/result/${response.evaluation_id}`;
+                        window.location.href = `/results/${response.evaluation_id}`;
                     }, 2000);
                 } else {
                     toast.error(response.message || 'Upload failed');

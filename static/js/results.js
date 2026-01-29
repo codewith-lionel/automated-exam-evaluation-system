@@ -154,18 +154,20 @@ async function applyFilters() {
 }
 
 function viewResult(id) {
-    window.location.href = `/result/${id}`;
+    window.location.href = `/results/${id}`;
 }
 
 // Result Detail Page
 async function initResultDetail() {
-    const pathParts = window.location.pathname.split('/');
-    const resultId = pathParts[pathParts.length - 1];
+    if (typeof result_id === 'undefined') {
+        const pathParts = window.location.pathname.split('/');
+        result_id = pathParts[pathParts.length - 1];
+    }
 
     try {
         loader.show('Loading result details...');
         
-        const response = await api.get(`/evaluate/result/${resultId}`);
+        const response = await api.get(`/evaluate/results/${result_id}`);
         
         if (response.success) {
             renderResultDetail(response.result);
@@ -339,7 +341,7 @@ async function exportResult(resultId, format = 'pdf') {
     try {
         loader.show('Exporting result...');
         
-        const response = await api.get(`/evaluate/result/${resultId}/export?format=${format}`);
+        const response = await api.get(`/evaluate/results/${resultId}/export?format=${format}`);
         
         if (response.success) {
             downloadFile(response.url, `result-${resultId}.${format}`);
@@ -363,7 +365,7 @@ async function deleteResult(resultId) {
     try {
         loader.show('Deleting result...');
         
-        const response = await api.delete(`/evaluate/result/${resultId}`);
+        const response = await api.delete(`/evaluate/results/${resultId}`);
         
         if (response.success) {
             toast.success('Result deleted successfully');

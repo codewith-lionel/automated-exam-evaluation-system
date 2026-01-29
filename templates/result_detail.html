@@ -21,7 +21,7 @@
             </div>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary" onclick="exportResult('{{ result_id }}', 'pdf')">
+            <button class="btn btn-secondary" onclick="exportResult('{{ evaluation_id }}', 'pdf')">
                 <i class="fas fa-download"></i> Export PDF
             </button>
             <button class="btn btn-ghost" onclick="window.print()">
@@ -141,13 +141,13 @@
             </div>
             <div class="card-body">
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="/feedback/{{ result_id }}" class="btn btn-secondary btn-block">
+                    <a href="/feedback/{{ evaluation_id }}" class="btn btn-secondary btn-block">
                         <i class="fas fa-comment"></i> Add Feedback
                     </a>
-                    <button class="btn btn-secondary btn-block" onclick="exportResult('{{ result_id }}', 'xlsx')">
+                    <button class="btn btn-secondary btn-block" onclick="exportResult('{{ evaluation_id }}', 'xlsx')">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </button>
-                    <button class="btn btn-danger btn-block" onclick="deleteResult('{{ result_id }}')">
+                    <button class="btn btn-danger btn-block" onclick="deleteResult('{{ evaluation_id }}')">
                         <i class="fas fa-trash"></i> Delete Result
                     </button>
                 </div>
@@ -200,7 +200,7 @@
 
 {% block extra_js %}
 <script>
-    const result_id = '{{ result_id }}';
+    const result_id = '{{ evaluation_id }}';
 </script>
 <script src="{{ url_for('static', filename='js/results.js') }}"></script>
 {% endblock %}

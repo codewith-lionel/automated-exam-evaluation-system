@@ -157,6 +157,17 @@ def get_evaluation_files(evaluation_id):
     return execute_query(query, (evaluation_id,), fetch_all=True)
 
 # Dashboard stats queries
+def delete_evaluation(evaluation_id):
+    """Delete an evaluation and all related data."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        # Delete in order: feedback, questions, uploaded_files, then evaluation
+        cursor.execute('DELETE FROM feedback WHERE evaluation_id = ?', (evaluation_id,))
+        cursor.execute('DELETE FROM questions WHERE evaluation_id = ?', (evaluation_id,))
+        cursor.execute('DELETE FROM uploaded_files WHERE evaluation_id = ?', (evaluation_id,))
+        cursor.execute('DELETE FROM evaluations WHERE id = ?', (evaluation_id,))
+        conn.commit()
+
 def get_dashboard_stats(user_id=None, role='student'):
     """Get dashboard statistics."""
     stats = {}

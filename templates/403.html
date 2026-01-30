@@ -1,0 +1,122 @@
+{% extends "base.html" %} {% block title %}403 - Access Denied{% endblock %} {%
+block content %}
+<div class="error-container">
+  <div class="error-content">
+    <div class="error-icon">
+      <i class="fas fa-ban"></i>
+    </div>
+    <h1 class="error-code">403</h1>
+    <h2 class="error-title">Access Denied</h2>
+    <p class="error-message">
+      You don't have permission to access this resource.
+    </p>
+    <p class="error-hint">
+      This page requires administrative privileges. If you believe you should
+      have access, please contact your system administrator.
+    </p>
+    <div class="error-actions">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Go to Dashboard
+      </a>
+      <a href="javascript:history.back()" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .error-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .error-content {
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .error-icon {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .error-icon i {
+    font-size: 5rem;
+    color: white;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .error-code {
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--error-color);
+    margin: 0;
+    line-height: 1;
+  }
+
+  .error-title {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin: 1rem 0;
+  }
+
+  .error-message {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .error-hint {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 4rem;
+    }
+
+    .error-title {
+      font-size: 1.5rem;
+    }
+
+    .error-icon {
+      width: 120px;
+      height: 120px;
+    }
+
+    .error-icon i {
+      font-size: 4rem;
+    }
+  }
+</style>
+{% endblock %}

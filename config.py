@@ -17,7 +17,7 @@ class Config:
     # Tesseract OCR path (adjust based on OS)
     # Windows: r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     # Mac/Linux: '/usr/bin/tesseract' or '/usr/local/bin/tesseract'
-    TESSERACT_CMD = os.environ.get('TESSERACT_CMD') or '/usr/bin/tesseract'
+    TESSERACT_CMD = r'C:\Users\hp\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
     
     # Application settings
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'

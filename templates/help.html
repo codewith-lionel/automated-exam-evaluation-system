@@ -1,0 +1,630 @@
+{% extends "base.html" %} {% block title %}Help & Documentation - ExamEval AI{%
+endblock %} {% block content %}
+<div class="page-header">
+  <h1><i class="fas fa-question-circle"></i> Help & Documentation</h1>
+  <p>Everything you need to know about using ExamEval AI</p>
+</div>
+
+<div class="help-container">
+  <!-- Quick Links -->
+  <div class="quick-links">
+    <h3><i class="fas fa-link"></i> Quick Links</h3>
+    <ul>
+      <li><a href="#getting-started">Getting Started</a></li>
+      <li><a href="#upload-exam">Uploading Exams</a></li>
+      <li><a href="#model-answers">Providing Model Answers</a></li>
+      <li><a href="#understanding-results">Understanding Results</a></li>
+      <li><a href="#exam-format">Exam Format Guidelines</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+
+  <!-- Help Content -->
+  <div class="help-content">
+    <!-- Getting Started -->
+    <section id="getting-started" class="help-section">
+      <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+      <div class="content-block">
+        <h3>1. Create an Account</h3>
+        <p>
+          Sign up with your email address and create a password. You'll receive
+          a confirmation and can start using the system immediately.
+        </p>
+
+        <h3>2. Login</h3>
+        <p>
+          Access your dashboard using your credentials. Students see their
+          evaluations, while admins see all submissions.
+        </p>
+
+        <h3>3. Navigate the Dashboard</h3>
+        <p>From the dashboard, you can:</p>
+        <ul>
+          <li>View your statistics and recent evaluations</li>
+          <li>Upload new exams</li>
+          <li>Check results</li>
+          <li>Update your profile</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Upload Exam -->
+    <section id="upload-exam" class="help-section">
+      <h2><i class="fas fa-upload"></i> Uploading Exams</h2>
+      <div class="content-block">
+        <h3>Supported File Formats</h3>
+        <ul>
+          <li><strong>Images:</strong> PNG, JPG, JPEG</li>
+          <li><strong>Documents:</strong> PDF</li>
+          <li><strong>Maximum Size:</strong> 10MB per file</li>
+        </ul>
+
+        <h3>Upload Steps</h3>
+        <ol>
+          <li>Go to the <strong>Upload</strong> page</li>
+          <li>Drag and drop your file or click to browse</li>
+          <li>
+            Fill in the exam details:
+            <ul>
+              <li>Subject (e.g., Computer Science)</li>
+              <li>Exam Type (Test, Quiz, Assignment, etc.)</li>
+              <li>Total Marks</li>
+              <li>Mode (Offline for scanned, Online for typed)</li>
+            </ul>
+          </li>
+          <li>Review the extracted text (for scanned papers)</li>
+          <li>Provide model answers</li>
+          <li>Click "Upload & Evaluate"</li>
+        </ol>
+
+        <div class="tip-box">
+          <i class="fas fa-lightbulb"></i>
+          <p>
+            <strong>Tip:</strong> For best OCR results, use high-quality scans
+            (300 DPI or higher) with good lighting and no shadows.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Model Answers -->
+    <section id="model-answers" class="help-section">
+      <h2><i class="fas fa-file-alt"></i> Providing Model Answers</h2>
+      <div class="content-block">
+        <h3>Format 1: JSON (Recommended)</h3>
+        <pre><code>{
+  "questions": [
+    {
+      "question_number": 1,
+      "question": "What is OOP?",
+      "model_answer": "Object-Oriented Programming...",
+      "max_marks": 10
+    },
+    {
+      "question_number": 2,
+      "question": "Explain inheritance.",
+      "model_answer": "Inheritance is...",
+      "max_marks": 10
+    }
+  ]
+}</code></pre>
+
+        <h3>Format 2: Structured Text</h3>
+        <pre><code>Q1: What is OOP?
+A1: Object-Oriented Programming is a paradigm...
+
+Q2: Explain inheritance.
+A2: Inheritance is a mechanism...</code></pre>
+
+        <div class="warning-box">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>
+            <strong>Important:</strong> Model answers must match the question
+            numbers in the student's exam paper.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Understanding Results -->
+    <section id="understanding-results" class="help-section">
+      <h2><i class="fas fa-chart-bar"></i> Understanding Results</h2>
+      <div class="content-block">
+        <h3>Score Calculation</h3>
+        <p>
+          The system uses <strong>Natural Language Processing (NLP)</strong> to
+          evaluate answers:
+        </p>
+        <ul>
+          <li>
+            <strong>Text Preprocessing:</strong> Removes punctuation, stop
+            words, and lemmatizes text
+          </li>
+          <li>
+            <strong>Keyword Extraction:</strong> Identifies important terms
+            using TF-IDF
+          </li>
+          <li>
+            <strong>Similarity Score:</strong> Calculates cosine similarity
+            between student and model answers
+          </li>
+          <li>
+            <strong>Final Score:</strong> Similarity percentage × Maximum marks
+          </li>
+        </ul>
+
+        <h3>Score Ranges</h3>
+        <table class="score-table">
+          <tr>
+            <th>Percentage</th>
+            <th>Grade</th>
+            <th>Meaning</th>
+          </tr>
+          <tr>
+            <td>90-100%</td>
+            <td>A+/A</td>
+            <td>Excellent understanding</td>
+          </tr>
+          <tr>
+            <td>80-89%</td>
+            <td>B+/B</td>
+            <td>Very good understanding</td>
+          </tr>
+          <tr>
+            <td>70-79%</td>
+            <td>C+/C</td>
+            <td>Good understanding</td>
+          </tr>
+          <tr>
+            <td>60-69%</td>
+            <td>D+/D</td>
+            <td>Satisfactory</td>
+          </tr>
+          <tr>
+            <td>Below 60%</td>
+            <td>F</td>
+            <td>Needs improvement</td>
+          </tr>
+        </table>
+
+        <h3>Results Include</h3>
+        <ul>
+          <li>
+            <strong>Overall Score:</strong> Total marks obtained and percentage
+          </li>
+          <li>
+            <strong>Question-wise Breakdown:</strong> Individual scores for each
+            question
+          </li>
+          <li>
+            <strong>Keyword Analysis:</strong> Matched and missed keywords
+          </li>
+          <li>
+            <strong>Feedback:</strong> Strengths, areas to improve, and
+            suggestions
+          </li>
+          <li>
+            <strong>Visual Charts:</strong> Score distribution and performance
+            graphs
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Exam Format -->
+    <section id="exam-format" class="help-section">
+      <h2><i class="fas fa-clipboard-list"></i> Exam Format Guidelines</h2>
+      <div class="content-block">
+        <h3>✅ Correct Format</h3>
+        <p>Student answers must be clearly numbered:</p>
+        <pre><code>Q1: Answer to question one...
+Q2: Answer to question two...
+Q3: Answer to question three...</code></pre>
+
+        <p>Or:</p>
+        <pre><code>1. Answer to question one...
+2. Answer to question two...
+3. Answer to question three...</code></pre>
+
+        <h3>❌ Incorrect Format</h3>
+        <ul>
+          <li>No question numbers or markers</li>
+          <li>Inconsistent formatting</li>
+          <li>Mixed numbering styles</li>
+          <li>Answers running together without separation</li>
+        </ul>
+
+        <div class="tip-box">
+          <i class="fas fa-lightbulb"></i>
+          <p>
+            <strong>Best Practice:</strong> Instruct students to clearly mark
+            each question (Q1:, Q2:, etc.) before their answers for accurate
+            evaluation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting" class="help-section">
+      <h2><i class="fas fa-wrench"></i> Troubleshooting</h2>
+      <div class="content-block">
+        <h3>OCR Not Working</h3>
+        <ul>
+          <li>Ensure handwriting is legible</li>
+          <li>Use high-quality scans (300+ DPI)</li>
+          <li>Avoid shadows and glare</li>
+          <li>Keep paper flat and aligned</li>
+        </ul>
+
+        <h3>Low Scores Despite Good Answers</h3>
+        <ul>
+          <li>Check if model answers are comprehensive</li>
+          <li>Verify student used similar terminology</li>
+          <li>Review extracted text for OCR errors</li>
+          <li>Ensure question numbering matches</li>
+        </ul>
+
+        <h3>All Questions Getting Same Score</h3>
+        <ul>
+          <li>Verify student answers are properly numbered (Q1:, Q2:, etc.)</li>
+          <li>Check that answers are separated, not running together</li>
+          <li>Review the extracted text to ensure correct parsing</li>
+        </ul>
+
+        <h3>Upload Fails</h3>
+        <ul>
+          <li>Check file size (max 10MB)</li>
+          <li>Verify file format (PNG, JPG, JPEG, PDF)</li>
+          <li>Try a different browser</li>
+          <li>Clear browser cache</li>
+        </ul>
+
+        <h3>Evaluation Takes Too Long</h3>
+        <ul>
+          <li>Large images may take longer to process</li>
+          <li>Multiple questions require more computation time</li>
+          <li>Wait up to 30 seconds for complex evaluations</li>
+          <li>Check internet connection</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="help-section">
+      <h2><i class="fas fa-comments"></i> Frequently Asked Questions</h2>
+      <div class="content-block">
+        <div class="faq-item">
+          <h3>Q: How accurate is the evaluation?</h3>
+          <p>
+            A: The NLP-based evaluation provides similarity scores based on
+            keyword matching and content analysis. While highly accurate for
+            factual content, subjective answers may require manual review.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: Can I edit evaluation results?</h3>
+          <p>
+            A: Admins can edit feedback. However, scores are automatically
+            calculated and cannot be manually changed to maintain consistency.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: Does it work with handwriting?</h3>
+          <p>
+            A: Yes! Our OCR engine can process handwritten text. For best
+            results, ensure clear, legible handwriting.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: Can I evaluate multiple exams at once?</h3>
+          <p>
+            A: Currently, exams are evaluated one at a time. Batch processing
+            may be added in future updates.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: How long are results stored?</h3>
+          <p>
+            A: All evaluation results are stored indefinitely in your account
+            and can be accessed anytime.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: Can I download my results?</h3>
+          <p>
+            A: Yes! Click the "Download PDF" button on any result page to get a
+            professional report.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Q: Is my data secure?</h3>
+          <p>
+            A: Absolutely. We use industry-standard encryption, secure sessions,
+            and role-based access control to protect your data.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="help-section">
+      <h2><i class="fas fa-envelope"></i> Still Need Help?</h2>
+      <div class="content-block contact-section">
+        <p>
+          If you couldn't find the answer you're looking for, we're here to
+          help!
+        </p>
+        <div class="contact-options">
+          <a
+            href="https://github.com/codewith-lionel/automated-exam-evaluation-system/issues"
+            target="_blank"
+            class="btn btn-primary"
+          >
+            <i class="fab fa-github"></i> Report an Issue
+          </a>
+          <a href="{{ url_for('about') }}" class="btn btn-secondary">
+            <i class="fas fa-info-circle"></i> About Us
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .page-header {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+    margin: -20px -20px 40px -20px;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .help-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 40px;
+  }
+
+  .quick-links {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+
+  .quick-links h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .quick-links ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .quick-links li {
+    margin-bottom: 0.5rem;
+  }
+
+  .quick-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .quick-links a:hover {
+    color: var(--primary-color);
+  }
+
+  .help-content {
+    min-width: 0;
+  }
+
+  .help-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 80px;
+  }
+
+  .help-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+  }
+
+  .content-block {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 2rem;
+  }
+
+  .content-block h3 {
+    font-size: 1.3rem;
+    margin: 1.5rem 0 1rem;
+    color: var(--text-primary);
+  }
+
+  .content-block h3:first-child {
+    margin-top: 0;
+  }
+
+  .content-block p {
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .content-block ul,
+  .content-block ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+    color: var(--text-secondary);
+  }
+
+  .content-block li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  code {
+    font-family: "Courier New", monospace;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .tip-box,
+  .warning-box {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 1.5rem 0;
+  }
+
+  .tip-box {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--success-color);
+  }
+
+  .warning-box {
+    background: rgba(255, 152, 0, 0.1);
+    border-left: 4px solid var(--warning-color);
+  }
+
+  .tip-box i,
+  .warning-box i {
+    font-size: 1.5rem;
+    color: var(--success-color);
+    margin-top: 0.2rem;
+  }
+
+  .warning-box i {
+    color: var(--warning-color);
+  }
+
+  .tip-box p,
+  .warning-box p {
+    margin: 0;
+  }
+
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+
+  .score-table th,
+  .score-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .score-table th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .score-table td {
+    color: var(--text-secondary);
+  }
+
+  .faq-item {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+  }
+
+  .faq-item h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .faq-item p {
+    margin: 0;
+  }
+
+  .contact-section {
+    text-align: center;
+  }
+
+  .contact-section p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 968px) {
+    .help-container {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-links {
+      position: static;
+      order: 2;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .help-section h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}

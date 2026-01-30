@@ -30,7 +30,12 @@ def index():
     """Landing page - redirect based on authentication."""
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+    return render_template('home.html')
+
+@app.route('/home')
+def home():
+    """Public home page."""
+    return render_template('home.html')
 
 @app.route('/login')
 def login():
@@ -80,6 +85,25 @@ def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('profile.html', user=session)
+
+@app.route('/about')
+def about():
+    """About page."""
+    return render_template('about.html', user=session if 'user_id' in session else None)
+
+@app.route('/help')
+def help_page():
+    """Help page."""
+    return render_template('help.html', user=session if 'user_id' in session else None)
+
+@app.route('/admin')
+def admin():
+    """Admin panel (requires admin role)."""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    if session.get('role') != 'admin':
+        return render_template('403.html'), 403
+    return render_template('admin.html', user=session)
 
 # Error handlers
 @app.errorhandler(404)

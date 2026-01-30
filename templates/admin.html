@@ -1,0 +1,525 @@
+{% extends "base.html" %} {% block title %}Admin Panel - ExamEval AI{% endblock
+%} {% block content %}
+<div class="admin-header">
+  <h1><i class="fas fa-user-shield"></i> Admin Panel</h1>
+  <p>System management and analytics</p>
+</div>
+
+<div class="admin-container">
+  <!-- Stats Overview -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div
+        class="stat-icon"
+        style="background: linear-gradient(135deg, #3498db, #2980b9)"
+      >
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value" id="totalUsers">0</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div
+        class="stat-icon"
+        style="background: linear-gradient(135deg, #9b59b6, #8e44ad)"
+      >
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value" id="totalEvaluations">0</span>
+        <span class="stat-label">Total Evaluations</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div
+        class="stat-icon"
+        style="background: linear-gradient(135deg, #2ecc71, #27ae60)"
+      >
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value" id="avgScore">0%</span>
+        <span class="stat-label">Average Score</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div
+        class="stat-icon"
+        style="background: linear-gradient(135deg, #e74c3c, #c0392b)"
+      >
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value" id="todayEvals">0</span>
+        <span class="stat-label">Today's Evaluations</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="admin-grid">
+    <!-- Recent Evaluations -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2><i class="fas fa-clipboard-list"></i> Recent Evaluations</h2>
+        <a href="{{ url_for('results') }}" class="btn btn-sm btn-secondary"
+          >View All</a
+        >
+      </div>
+      <div class="card-body">
+        <div id="recentEvaluations" class="evaluations-list">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Management -->
+    <div class="admin-card">
+      <div class="card-header">
+        <h2><i class="fas fa-users-cog"></i> User Management</h2>
+      </div>
+      <div class="card-body">
+        <div id="usersList" class="users-list">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Statistics -->
+    <div class="admin-card full-width">
+      <div class="card-header">
+        <h2><i class="fas fa-chart-bar"></i> Performance Analytics</h2>
+      </div>
+      <div class="card-body">
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    loadAdminData();
+  });
+
+  async function loadAdminData() {
+    try {
+      // Load dashboard stats
+      const statsRes = await api.get("/dashboard/stats");
+      if (statsRes.success) {
+        const stats = statsRes.stats;
+        document.getElementById("totalUsers").textContent =
+          stats.total_users || 0;
+        document.getElementById("totalEvaluations").textContent =
+          stats.total_evaluations || 0;
+        document.getElementById("avgScore").textContent =
+          (stats.average_score || 0).toFixed(1) + "%";
+        document.getElementById("todayEvals").textContent =
+          stats.today_evaluations || 0;
+      }
+
+      // Load recent evaluations
+      const evalsRes = await api.get("/dashboard/recent?limit=10");
+      if (evalsRes.success) {
+        displayRecentEvaluations(evalsRes.activities);
+      }
+
+      // Load users (would need a new API endpoint)
+      loadUsers();
+
+      // Load performance chart
+      loadPerformanceChart();
+    } catch (error) {
+      console.error("Error loading admin data:", error);
+      toast.error("Failed to load admin data");
+    }
+  }
+
+  function displayRecentEvaluations(evaluations) {
+    const container = document.getElementById("recentEvaluations");
+
+    if (!evaluations || evaluations.length === 0) {
+      container.innerHTML = '<p class="no-data">No evaluations yet</p>';
+      return;
+    }
+
+    container.innerHTML = evaluations
+      .map(
+        (eval) => `
+        <div class="eval-item">
+            <div class="eval-info">
+                <span class="eval-user"><i class="fas fa-user"></i> ${eval.username || "Unknown"}</span>
+                <span class="eval-subject">${eval.subject}</span>
+            </div>
+            <div class="eval-meta">
+                <span class="eval-score ${eval.percentage >= 70 ? "good" : eval.percentage >= 50 ? "average" : "poor"}">
+                    ${eval.percentage}%
+                </span>
+                <span class="eval-date">${formatDate(eval.created_at)}</span>
+            </div>
+            <a href="/results/${eval.id}" class="btn btn-sm btn-outline">View</a>
+        </div>
+    `,
+      )
+      .join("");
+  }
+
+  function loadUsers() {
+    // Placeholder - would need backend API endpoint
+    const container = document.getElementById("usersList");
+    container.innerHTML = `
+        <div class="user-item">
+            <div class="user-info">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Users: <strong>{{ user.username if user else 'Admin' }}</strong></span>
+            </div>
+        </div>
+        <div class="user-item">
+            <div class="user-info">
+                <i class="fas fa-user"></i>
+                <span>Student Users: Contact database admin</span>
+            </div>
+        </div>
+        <p class="info-text"><i class="fas fa-info-circle"></i> User management features coming soon</p>
+    `;
+  }
+
+  function loadPerformanceChart() {
+    const ctx = document.getElementById("performanceChart").getContext("2d");
+
+    // Sample data - replace with real data from API
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Average Scores",
+            data: [65, 70, 68, 75, 72, 78],
+            borderColor: "rgb(155, 89, 182)",
+            backgroundColor: "rgba(155, 89, 182, 0.1)",
+            tension: 0.4,
+          },
+          {
+            label: "Evaluations",
+            data: [12, 19, 15, 25, 22, 30],
+            borderColor: "rgb(52, 152, 219)",
+            backgroundColor: "rgba(52, 152, 219, 0.1)",
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            labels: {
+              color: "rgb(200, 200, 200)",
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "rgba(255, 255, 255, 0.1)",
+            },
+            ticks: {
+              color: "rgb(200, 200, 200)",
+            },
+          },
+          x: {
+            grid: {
+              color: "rgba(255, 255, 255, 0.1)",
+            },
+            ticks: {
+              color: "rgb(200, 200, 200)",
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return date.toLocaleDateString();
+  }
+</script>
+
+<style>
+  .admin-header {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+    margin: -20px -20px 40px -20px;
+  }
+
+  .admin-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .admin-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .admin-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .card-header {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-header h2 {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .evaluations-list,
+  .users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .eval-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+  }
+
+  .eval-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .eval-user {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .eval-subject {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .eval-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+  }
+
+  .eval-score {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .eval-score.good {
+    background: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+  }
+
+  .eval-score.average {
+    background: rgba(241, 196, 15, 0.2);
+    color: var(--warning-color);
+  }
+
+  .eval-score.poor {
+    background: rgba(231, 76, 60, 0.2);
+    color: var(--error-color);
+  }
+
+  .eval-date {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .user-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+  }
+
+  .user-info i {
+    color: var(--primary-color);
+  }
+
+  .info-text {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 5px;
+    color: var(--text-secondary);
+  }
+
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 1024px) {
+    .admin-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-header h1 {
+      font-size: 2rem;
+    }
+
+    .stats-section {
+      grid-template-columns: 1fr;
+    }
+
+    .eval-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .eval-meta {
+      align-items: flex-start;
+    }
+  }
+</style>
+{% endblock %}

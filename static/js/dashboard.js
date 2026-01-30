@@ -18,16 +18,25 @@ async function initDashboard() {
         loader.show('Loading dashboard...');
         
         // Load dashboard data
-        const data = await api.get('/dashboard');
+        const [statsData, recentData] = await Promise.all([
+            api.get('/dashboard/stats'),
+            api.get('/dashboard/recent')
+        ]);
         
-        // Render KPIs
-        renderKPIs(data.kpis);
+        // Render KPIs from stats
+        if (statsData.success && statsData.stats) {
+            renderKPIs(statsData.stats, user);
+        }
         
-        // Render charts
-        renderCharts(data.charts);
+        // Render charts (using recent data for now)
+        if (recentData.success && recentData.recent) {
+            renderCharts(recentData.recent);
+        }
         
         // Render recent activity
-        renderRecentActivity(data.recentActivity);
+        if (recentData.success && recentData.recent) {
+            renderRecentActivity(recentData.recent);
+        }
         
         loader.hide();
     } catch (error) {
@@ -37,38 +46,65 @@ async function initDashboard() {
     }
 }
 
-function renderKPIs(kpis) {
+function renderKPIs(stats, user) {
     const kpisContainer = document.getElementById('dashboardKPIs');
     if (!kpisContainer) return;
 
+    // Create KPI cards from stats
+    const kpis = [];
+    
+    if (user && user.role === 'admin') {
+        kpis.push(
+            { icon: '📊', value: stats.total_evaluations || 0, label: 'Total Evaluations' },
+            { icon: '🎯', value: `${stats.average_score || 0}%`, label: 'Average Score' },
+            { icon: '👥', value: stats.total_students || 0, label: 'Total Students' }
+        );
+    } else {
+        kpis.push(
+            { icon: '📊', value: stats.total_evaluations || 0, label: 'My Evaluations' },
+            { icon: '🎯', value: `${stats.average_score || 0}%`, label: 'Average Score' },
+            { icon: '🏆', value: `${stats.highest_score || 0}%`, label: 'Highest Score' }
+        );
+    }
+
     kpisContainer.innerHTML = kpis.map(kpi => `
         <div class="kpi-card">
-            <div class="kpi-icon">${getKPIIcon(kpi.type)}</div>
+            <div class="kpi-icon">${kpi.icon}</div>
             <div class="kpi-value">${kpi.value}</div>
             <div class="kpi-label">${kpi.label}</div>
-            ${kpi.trend ? `
-                <div class="kpi-trend ${kpi.trend > 0 ? 'up' : 'down'}">
-                    ${kpi.trend > 0 ? '↑' : '↓'} ${Math.abs(kpi.trend)}%
-                </div>
-            ` : ''}
         </div>
     `).join('');
 }
 
-function getKPIIcon(type) {
-    const icons = {
-        evaluations: '📊',
-        average_score: '🎯',
-        students: '👥',
-        pending: '⏳',
-        completed: '✓',
-        total_papers: '📄'
-    };
-    return icons[type] || '📈';
-}
+function getKPIIcon(tyrecentEvaluations) {
+    // Generate chart data from recent evaluations
+    if (recentEvaluations && recentEvaluations.length > 0) {
+        // Performance Over Time Chart
+        if (document.getElementById('performanceChart')) {
+            const chartData = {
+                labels: recentEvaluations.slice(0, 10).reverse().map(e => 
+                    new Date(e.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                ),
+                values: recentEvaluations.slice(0, 10).reverse().map(e => e.percentage)
+            };
+            renderPerformanceChart(chartData);
+        }
 
-function renderCharts(charts) {
-    // Performance Over Time Chart
+        // Score Distribution Chart
+        if (document.getElementById('scoreDistributionChart')) {
+            const scores = recentEvaluations.map(e => e.percentage);
+            const distribution = {
+                labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                values: [
+                    scores.filter(s => s <= 20).length,
+                    scores.filter(s => s > 20 && s <= 40).length,
+                    scores.filter(s => s > 40 && s <= 60).length,
+                    scores.filter(s => s > 60 && s <= 80).length,
+                    scores.filter(s => s > 80).length
+                ]
+            };
+            renderScoreDistributionChart(distribution);
+        }
     if (charts.performanceOverTime && document.getElementById('performanceChart')) {
         renderPerformanceChart(charts.performanceOverTime);
     }
@@ -245,16 +281,16 @@ function renderSubjectPerformanceChart(data) {
     });
 }
 
-function renderRecentActivity(activities) {
+function renderRecentActivity(evaluations) {
     const activityContainer = document.getElementById('recentActivity');
     if (!activityContainer) return;
 
-    if (!activities || activities.length === 0) {
+    if (!evaluations || evaluations.length === 0) {
         activityContainer.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <div class="empty-state-title">No recent activity</div>
-                <div class="empty-state-text">Your recent activities will appear here</div>
+                <div class="empty-state-text">Your recent evaluations will appear here</div>
             </div>
         `;
         return;
@@ -262,20 +298,35 @@ function renderRecentActivity(activities) {
 
     activityContainer.innerHTML = `
         <ul class="activity-list">
-            ${activities.map(activity => `
+            ${evaluations.map(eval => `
                 <li class="activity-item">
-                    <div class="activity-icon ${activity.type}">
-                        ${getActivityIcon(activity.type)}
+                    <div class="activity-icon ${getScoreClass(eval.percentage)}">
+                        ${getScoreIcon(eval.percentage)}
                     </div>
                     <div class="activity-content">
-                        <div class="activity-title">${activity.title}</div>
-                        <div class="activity-meta">${activity.description}</div>
+                        <div class="activity-title">${eval.subject} - ${eval.exam_type}</div>
+                        <div class="activity-meta">Score: ${eval.percentage}% ${eval.username ? `• ${eval.username}` : ''}</div>
                     </div>
-                    <div class="activity-time">${timeAgo(activity.timestamp)}</div>
+                    <div class="activity-time">${timeAgo(eval.created_at)}</div>
+                    <a href="/results/${eval.id}" class="activity-action">View</a>
                 </li>
             `).join('')}
         </ul>
     `;
+}
+
+function getScoreClass(percentage) {
+    if (percentage >= 80) return 'success';
+    if (percentage >= 60) return 'info';
+    if (percentage >= 40) return 'warning';
+    return 'error';
+}
+
+function getScoreIcon(percentage) {
+    if (percentage >= 80) return '🏆';
+    if (percentage >= 60) return '✓';
+    if (percentage >= 40) return '⚠';
+    return '✗';
 }
 
 function getActivityIcon(type) {

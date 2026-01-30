@@ -9,6 +9,7 @@ A comprehensive web-based automated examination evaluation system that uses OCR 
 ## ✨ Features
 
 ### Core Functionality
+
 - 🔐 **Secure Authentication** - Role-based access control (Admin/Teacher and Student)
 - 📤 **Smart Upload System** - Drag-and-drop file upload with support for PNG, JPG, JPEG, PDF
 - 🔍 **OCR Processing** - Extract text from scanned exam papers using Tesseract OCR
@@ -19,6 +20,7 @@ A comprehensive web-based automated examination evaluation system that uses OCR 
 - 📈 **Analytics Dashboard** - Role-based dashboards with KPIs and performance metrics
 
 ### User Interface
+
 - 🌙 **Dark Theme** - Professional dark theme with optional light mode toggle
 - 📱 **Responsive Design** - Works seamlessly on mobile, tablet, and desktop
 - ♿ **Accessible** - WCAG 2.1 AA compliant with keyboard navigation
@@ -32,11 +34,13 @@ A comprehensive web-based automated examination evaluation system that uses OCR 
 Before installation, ensure you have the following installed:
 
 1. **Python 3.8 or higher**
+
    ```bash
    python --version
    ```
 
 2. **Git**
+
    ```bash
    git --version
    ```
@@ -49,11 +53,13 @@ Before installation, ensure you have the following installed:
    - Add to PATH or update `config.py` with installation path
 
    **macOS:**
+
    ```bash
    brew install tesseract
    ```
 
    **Linux (Ubuntu/Debian):**
+
    ```bash
    sudo apt update
    sudo apt install tesseract-ocr
@@ -61,6 +67,7 @@ Before installation, ensure you have the following installed:
    ```
 
    **Verify installation:**
+
    ```bash
    tesseract --version
    ```
@@ -68,49 +75,56 @@ Before installation, ensure you have the following installed:
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/codewith-lionel/automated-exam-evaluation-system.git
    cd automated-exam-evaluation-system
    ```
 
 2. **Create and activate virtual environment**
-   
+
    **Windows:**
+
    ```bash
    python -m venv venv
    venv\Scripts\activate
    ```
 
    **macOS/Linux:**
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate
    ```
 
 3. **Install Python dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Configure Tesseract path (if needed)**
-   
+
    Edit `config.py` and update the `TESSERACT_CMD` path:
+
    ```python
    # Windows
    TESSERACT_CMD = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-   
+
    # macOS/Linux (usually auto-detected)
    TESSERACT_CMD = '/usr/bin/tesseract'  # or '/usr/local/bin/tesseract'
    ```
 
 5. **Download NLTK data**
-   
+
    The application will automatically download required NLTK data on first run, but you can also do it manually:
+
    ```bash
    python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet'); nltk.download('punkt_tab')"
    ```
 
 6. **Initialize the database**
+
    ```bash
    python init_db.py
    ```
@@ -121,13 +135,15 @@ Before installation, ensure you have the following installed:
    - Demo student user: `student@exam.com` / `Student@123`
 
 7. **Run the application**
+
    ```bash
    python app.py
    ```
 
 8. **Access the application**
-   
+
    Open your browser and navigate to:
+
    ```
    http://localhost:5000
    ```
@@ -157,6 +173,98 @@ Before installation, ensure you have the following installed:
 3. **Review student submissions** from the Results page
 4. **Edit feedback** for any evaluation
 5. **Generate PDF reports** for distribution
+
+## 📝 Exam Paper Format Guidelines
+
+### Important: Structuring Student Answers
+
+For accurate evaluation, student exam papers must follow a structured format. The system needs to identify individual question answers.
+
+#### ✅ Supported Formats
+
+**Format 1: Numbered with Period**
+
+```
+1. Object-Oriented Programming is a programming paradigm based on objects...
+2. A class is a blueprint for creating objects while an object is an instance...
+3. Encapsulation is the bundling of data and methods within a class...
+```
+
+**Format 2: Question Prefix**
+
+```
+Q1: Object-Oriented Programming is a programming paradigm based on objects...
+Q2: A class is a blueprint for creating objects while an object is an instance...
+Q3: Encapsulation is the bundling of data and methods within a class...
+```
+
+**Format 3: Answer Prefix**
+
+```
+Answer 1: Object-Oriented Programming is a programming paradigm based on objects...
+Answer 2: A class is a blueprint for creating objects while an object is an instance...
+Answer 3: Encapsulation is the bundling of data and methods within a class...
+```
+
+#### ❌ What Doesn't Work
+
+- **No numbering or markers** - System cannot identify where one answer ends and another begins
+- **Inconsistent formatting** - Mixing different styles within the same paper
+- **Poor OCR quality** - Illegible handwriting or low-quality scans
+
+### Model Answer Format
+
+When providing model answers (answer key), use one of these formats:
+
+**Format 1: JSON (Recommended)**
+
+```json
+{
+  "questions": [
+    {
+      "question_number": 1,
+      "question": "What is OOP?",
+      "model_answer": "Object-Oriented Programming is a paradigm...",
+      "max_marks": 10
+    },
+    {
+      "question_number": 2,
+      "question": "Explain class vs object.",
+      "model_answer": "A class is a blueprint...",
+      "max_marks": 10
+    }
+  ]
+}
+```
+
+**Format 2: Structured Text**
+
+```
+Q1: What is OOP?
+A1: Object-Oriented Programming is a paradigm based on objects...
+
+Q2: Explain class vs object.
+A2: A class is a blueprint for creating objects...
+```
+
+### Tips for Best Results
+
+1. **Clear Handwriting** - For scanned papers, ensure handwriting is legible
+2. **Good Scan Quality** - Use 300 DPI or higher, avoid shadows and creases
+3. **Consistent Numbering** - Start from 1 and increment sequentially
+4. **One Question Per Section** - Don't mix multiple sub-questions without clear markers
+5. **Provide Complete Model Answers** - The more detailed your model answer, the better the evaluation
+
+### Example Workflow
+
+1. **Student writes exam** following format (e.g., "Q1: answer", "Q2: answer")
+2. **Scan or photograph** the exam paper
+3. **Upload** to the system
+4. **System extracts text** using OCR
+5. **Provide model answers** in JSON or structured text format
+6. **System parses** student answers by question number
+7. **NLP evaluation** compares each student answer with corresponding model answer
+8. **View results** with per-question breakdown
 
 ## 🏗️ Project Structure
 
@@ -250,10 +358,12 @@ automated-exam-evaluation-system/
 ### Sample Credentials
 
 **Admin/Teacher Account:**
+
 - Email: `admin@exam.com`
 - Password: `Admin@123`
 
 **Student Account:**
+
 - Email: `student@exam.com`
 - Password: `Student@123`
 
@@ -268,6 +378,7 @@ automated-exam-evaluation-system/
 ## 🛠️ Technology Stack
 
 ### Backend
+
 - **Flask 3.0.0** - Web framework
 - **SQLite** - Database
 - **Tesseract OCR** - Text extraction from images
@@ -278,6 +389,7 @@ automated-exam-evaluation-system/
 - **OpenCV** - Image preprocessing
 
 ### Frontend
+
 - **HTML5** - Semantic markup
 - **CSS3** - Styling with custom properties
 - **Vanilla JavaScript (ES6+)** - Client-side logic
@@ -310,6 +422,7 @@ automated-exam-evaluation-system/
 **Error:** `pytesseract.pytesseract.TesseractNotFoundError`
 
 **Solution:**
+
 1. Verify Tesseract is installed: `tesseract --version`
 2. Update `config.py` with correct Tesseract path
 3. Ensure Tesseract is in your system PATH
@@ -319,6 +432,7 @@ automated-exam-evaluation-system/
 **Error:** `LookupError: Resource punkt not found`
 
 **Solution:**
+
 ```bash
 python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet'); nltk.download('punkt_tab')"
 ```
@@ -328,6 +442,7 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk
 **Error:** `sqlite3.OperationalError: unable to open database file`
 
 **Solution:**
+
 ```bash
 python init_db.py
 ```
@@ -337,6 +452,7 @@ python init_db.py
 **Error:** `OSError: [Errno 98] Address already in use`
 
 **Solution:**
+
 ```bash
 # Kill process on port 5000
 # Linux/Mac:
@@ -355,6 +471,7 @@ PORT = 5001
 **Error:** File upload returns 400 error
 
 **Solution:**
+
 1. Check file size (max 10MB)
 2. Verify file format (PNG, JPG, JPEG, PDF only)
 3. Ensure `uploads/` directory exists and is writable
@@ -396,6 +513,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📧 Support
 
 For issues, questions, or suggestions:
+
 - Open an issue on GitHub
 - Email: support@exameval.ai (example)
 
@@ -413,4 +531,4 @@ For issues, questions, or suggestions:
 
 **Made with ❤️ by the ExamEval AI Team**
 
-*Smarter Assessments. Fairer Futures.*
+_Smarter Assessments. Fairer Futures._

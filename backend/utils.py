@@ -61,8 +61,11 @@ def parse_questions_from_text(text, model_answers=None):
     """
     Parse questions and answers from extracted text.
     
-    This is a simple parser that looks for question patterns.
-    Can be enhanced based on specific exam format.
+    This parser looks for question patterns and extracts individual answers.
+    Supports multiple formats:
+    - Q1: answer / Question 1: answer
+    - 1. answer / 1) answer
+    - Answer 1: answer / Ans 1: answer
     
     Args:
         text: Extracted text from OCR
@@ -75,23 +78,68 @@ def parse_questions_from_text(text, model_answers=None):
     
     questions = []
     
-    # Split by question numbers (e.g., "1.", "Q1.", "Question 1:")
-    question_pattern = r'(?:Question\s*\d+|Q\s*\d+|\d+\.)[\s:]*'
-    parts = re.split(question_pattern, text, flags=re.IGNORECASE)
+    if not text or not text.strip():
+        return questions
     
-    # Remove empty first element if present
-    if parts and not parts[0].strip():
-        parts = parts[1:]
+    # Try to find question-answer pairs
+    lines = text.split('\n')
+    current_q_num = None
+    current_answer = ''
     
-    for i, part in enumerate(parts):
-        if part.strip():
-            questions.append({
-                'question_number': i + 1,
-                'question_text': f'Question {i + 1}',
-                'student_answer': part.strip(),
-                'model_answer': model_answers.get(str(i + 1), '') if model_answers else '',
-                'max_marks': 10  # Default marks per question
-            })
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        
+        # Check for question/answer number patterns
+        patterns = [
+            r'^(?:Q|Question|Ans|Answer)\s*(\d+)\s*[:.-]\s*(.*)$',  # Q1: or Answer 1:
+            r'^(\d+)\s*[:.)]\s*(.*)$',  # 1. or 1) or 1:
+        ]
+        
+        matched = False
+        for pattern in patterns:
+            match = re.match(pattern, line, re.IGNORECASE)
+            if match:
+                # Save previous question if exists
+                if current_q_num is not None and current_answer.strip():
+                    questions.append({
+                        'question_number': current_q_num,
+                        'question_text': f'Question {current_q_num}',
+                        'student_answer': current_answer.strip(),
+                        'model_answer': model_answers.get(str(current_q_num), '') if model_answers else '',
+                        'max_marks': 10
+                    })
+                
+                # Start new question
+                current_q_num = int(match.group(1))
+                current_answer = match.group(2) if len(match.groups()) > 1 else ''
+                matched = True
+                break
+        
+        # If no pattern matched and we have a current question, append to it
+        if not matched and current_q_num is not None:
+            current_answer += ' ' + line
+    
+    # Save the last question
+    if current_q_num is not None and current_answer.strip():
+        questions.append({
+            'question_number': current_q_num,
+            'question_text': f'Question {current_q_num}',
+            'student_answer': current_answer.strip(),
+            'model_answer': model_answers.get(str(current_q_num), '') if model_answers else '',
+            'max_marks': 10
+        })
+    
+    # If no questions found, treat entire text as single answer
+    if not questions and text.strip():
+        questions.append({
+            'question_number': 1,
+            'question_text': 'Question 1',
+            'student_answer': text.strip(),
+            'model_answer': model_answers.get('1', '') if model_answers else '',
+            'max_marks': 10
+        })
     
     return questions
 

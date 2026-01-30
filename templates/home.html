@@ -1,0 +1,505 @@
+{% extends "base.html" %} {% block title %}Home - ExamEval AI{% endblock %} {%
+block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title">
+        <span class="gradient-text">ExamEval AI</span>
+      </h1>
+      <p class="hero-subtitle">Smarter Assessments. Fairer Futures.</p>
+      <p class="hero-description">
+        Automated examination evaluation system powered by OCR and NLP
+        technology. Evaluate handwritten and typed exams with intelligent
+        AI-driven analysis.
+      </p>
+      <div class="hero-buttons">
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i> Get Started
+        </a>
+        <a href="{{ url_for('about') }}" class="btn btn-secondary btn-lg">
+          <i class="fas fa-info-circle"></i> Learn More
+        </a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="floating-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Smart Evaluation</h3>
+        <p>AI-powered grading</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="container">
+    <h2 class="section-title">Why Choose ExamEval AI?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-scan"></i>
+        </div>
+        <h3>OCR Processing</h3>
+        <p>
+          Advanced OCR technology extracts text from handwritten and scanned
+          exam papers with high accuracy.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <h3>NLP Evaluation</h3>
+        <p>
+          Natural Language Processing analyzes answers using TF-IDF and cosine
+          similarity for fair scoring.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Visual Results</h3>
+        <p>
+          Interactive charts and detailed breakdowns help understand performance
+          at a glance.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-comments"></i>
+        </div>
+        <h3>Smart Feedback</h3>
+        <p>
+          Automated feedback identifies strengths and areas for improvement with
+          specific suggestions.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <h3>PDF Reports</h3>
+        <p>
+          Generate professional evaluation reports that can be downloaded and
+          shared instantly.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Secure & Private</h3>
+        <p>
+          Role-based access control and encrypted data ensure your information
+          stays protected.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+  <div class="container">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Upload Exam</h3>
+        <p>
+          Upload scanned exam papers or type answers directly. Supports PNG,
+          JPG, PDF formats.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>OCR Extraction</h3>
+        <p>
+          Our OCR engine extracts text from images with high accuracy, even from
+          handwriting.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Provide Model Answers</h3>
+        <p>
+          Input the correct answers or import them from JSON format for
+          comparison.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <h3>AI Evaluation</h3>
+        <p>
+          NLP algorithms analyze answers, extract keywords, and calculate
+          similarity scores.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">5</div>
+        <h3>View Results</h3>
+        <p>
+          See detailed breakdowns with scores, charts, matched/missed keywords,
+          and feedback.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">6</div>
+        <h3>Download Report</h3>
+        <p>Generate and download professional PDF reports for your records.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">10MB</div>
+        <div class="stat-label">Max File Size</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Automated</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">&lt;5s</div>
+        <div class="stat-label">Average Processing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Available</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to Transform Your Exam Evaluation?</h2>
+    <p>
+      Join educators and students who are experiencing faster, fairer
+      assessments.
+    </p>
+    <div class="cta-buttons">
+      <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-user-plus"></i> Sign Up Free
+      </a>
+      <a href="{{ url_for('help_page') }}" class="btn btn-outline btn-lg">
+        <i class="fas fa-question-circle"></i> View Documentation
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+    padding: 100px 20px;
+    margin-top: -20px;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .gradient-text {
+    background: linear-gradient(to right, #fff, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+  }
+
+  .hero-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .floating-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .floating-card i {
+    font-size: 4rem;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .floating-card h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .floating-card p {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 80px 20px;
+    background: var(--bg-secondary);
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .feature-icon i {
+    font-size: 2rem;
+    color: white;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* How It Works Section */
+  .how-it-works-section {
+    padding: 80px 20px;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .step-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .step-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .step-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    padding: 60px 20px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .stat-card {
+    text-align: center;
+    color: white;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 80px 20px;
+    text-align: center;
+    background: var(--bg-secondary);
+  }
+
+  .cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .cta-section p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .hero-image {
+      display: none;
+    }
+
+    .section-title {
+      font-size: 2rem;
+    }
+  }
+</style>
+{% endblock %}

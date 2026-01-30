@@ -10,7 +10,8 @@ from backend.auth import login_required, admin_required
 from backend.database import (
     create_evaluation, get_evaluation, get_user_evaluations, get_all_evaluations,
     create_question, get_evaluation_questions, create_feedback, get_evaluation_feedback,
-    update_feedback, create_uploaded_file, get_dashboard_stats, get_user_by_id
+    update_feedback, create_uploaded_file, get_dashboard_stats, get_user_by_id,
+    delete_evaluation
 )
 from backend.ocr_processor import process_uploaded_file
 from backend.nlp_evaluator import NLPEvaluator
@@ -283,6 +284,32 @@ def get_results(evaluation_id):
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@api_bp.route('/api/results/<int:evaluation_id>', methods=['DELETE'])
+@login_required
+def delete_result(evaluation_id):
+    """Delete an evaluation."""
+    try:
+        # Get evaluation
+        evaluation = get_evaluation(evaluation_id)
+        
+        if not evaluation:
+            return jsonify({'success': False, 'message': 'Evaluation not found'}), 404
+        
+        # Verify ownership or admin
+        if evaluation['user_id'] != session.get('user_id') and session.get('role') != 'admin':
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+        
+        # Delete evaluation
+        delete_evaluation(evaluation_id)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Evaluation deleted successfully'
+        }), 200
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 @api_bp.route('/api/results', methods=['GET'])
 @login_required
 def get_all_results():
@@ -302,13 +329,41 @@ def get_all_results():
         # Format results
         results = []
         for eval in evaluations:
+            # Get questions for this evaluation to calculate stats
+            questions = get_evaluation_questions(eval['id'])
+            
+            correct = 0
+            partial = 0
+            incorrect = 0
+            
+            for q in questions:
+                if q['obtained_marks'] == q['max_marks']:
+                    correct += 1
+                elif q['obtained_marks'] > 0:
+                    partial += 1
+                else:
+                    incorrect += 1
+            
+            # Get student name from username or email
+            student_name = eval.get('username', eval.get('email', 'Student'))
+            if student_name and '@' in student_name:
+                student_name = student_name.split('@')[0].title()
+            
             results.append({
                 'id': eval['id'],
+                'student_name': student_name,
+                'exam_name': f"{eval['subject']} - {eval['exam_type']}",
                 'subject': eval['subject'],
                 'exam_type': eval['exam_type'],
-                'percentage': eval['percentage'],
+                'score': round(eval['percentage'], 2),
+                'percentage': round(eval['percentage'], 2),
                 'status': eval['status'],
-                'created_at': eval['created_at']
+                'date': eval['created_at'],
+                'created_at': eval['created_at'],
+                'correct': correct,
+                'partial': partial,
+                'incorrect': incorrect,
+                'total_questions': len(questions)
             })
         
         return jsonify({

@@ -1,0 +1,472 @@
+{% extends "base.html" %} {% block title %}About - ExamEval AI{% endblock %} {%
+block content %}
+<div class="page-header">
+  <h1><i class="fas fa-info-circle"></i> About ExamEval AI</h1>
+  <p>Revolutionizing exam evaluation with AI technology</p>
+</div>
+
+<div class="content-container">
+  <!-- Mission Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+    <div class="mission-content">
+      <p>
+        ExamEval AI is dedicated to transforming the traditional exam evaluation
+        process through cutting-edge artificial intelligence and machine
+        learning technologies. We believe in making assessments faster, fairer,
+        and more insightful for both educators and students.
+      </p>
+      <p>
+        Our mission is to reduce the time teachers spend on grading while
+        providing students with detailed, constructive feedback that helps them
+        improve their understanding and performance.
+      </p>
+    </div>
+  </section>
+
+  <!-- Technology Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-cogs"></i> Technology Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <i class="fas fa-robot"></i>
+        <h3>OCR Processing</h3>
+        <p>
+          Tesseract OCR engine extracts text from handwritten and scanned
+          documents with high accuracy.
+        </p>
+      </div>
+      <div class="tech-card">
+        <i class="fas fa-brain"></i>
+        <h3>Natural Language Processing</h3>
+        <p>
+          NLTK and scikit-learn power our intelligent answer evaluation using
+          TF-IDF and cosine similarity.
+        </p>
+      </div>
+      <div class="tech-card">
+        <i class="fas fa-server"></i>
+        <h3>Flask Framework</h3>
+        <p>
+          Robust Python web framework ensuring reliable and scalable
+          performance.
+        </p>
+      </div>
+      <div class="tech-card">
+        <i class="fas fa-database"></i>
+        <h3>SQLite Database</h3>
+        <p>
+          Efficient data storage and retrieval for all evaluations and user
+          information.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-star"></i> Key Features</h2>
+    <div class="features-list">
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>Automated OCR</h3>
+          <p>
+            Extract text from handwritten exams with advanced optical character
+            recognition.
+          </p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>NLP-Based Evaluation</h3>
+          <p>
+            Intelligent answer analysis using natural language processing
+            algorithms.
+          </p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>Keyword Analysis</h3>
+          <p>
+            Identify matched and missed keywords to provide specific feedback.
+          </p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>Visual Analytics</h3>
+          <p>Interactive charts and graphs to visualize performance trends.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>Instant Feedback</h3>
+          <p>Automated generation of constructive feedback for improvement.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h3>PDF Reports</h3>
+          <p>
+            Professional evaluation reports that can be downloaded and shared.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-clipboard-list"></i> How It Works</h2>
+    <div class="process-timeline">
+      <div class="timeline-item">
+        <div class="timeline-number">1</div>
+        <div class="timeline-content">
+          <h3>Upload Exam</h3>
+          <p>
+            Students or teachers upload scanned exam papers or typed answers.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-number">2</div>
+        <div class="timeline-content">
+          <h3>OCR Extraction</h3>
+          <p>
+            Our OCR engine processes the image and extracts all text content.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-number">3</div>
+        <div class="timeline-content">
+          <h3>Text Processing</h3>
+          <p>
+            NLP algorithms clean, tokenize, and lemmatize the extracted text.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-number">4</div>
+        <div class="timeline-content">
+          <h3>Answer Comparison</h3>
+          <p>
+            System compares student answers with model answers using similarity
+            algorithms.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-number">5</div>
+        <div class="timeline-content">
+          <h3>Scoring & Feedback</h3>
+          <p>
+            Generates scores, identifies keywords, and creates detailed
+            feedback.
+          </p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-number">6</div>
+        <div class="timeline-content">
+          <h3>Results Display</h3>
+          <p>
+            Present comprehensive results with charts, breakdowns, and
+            recommendations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-users"></i> Our Team</h2>
+    <div class="team-content">
+      <p>
+        ExamEval AI is developed by a dedicated team of developers, educators,
+        and AI researchers committed to improving educational technology. We
+        combine expertise in machine learning, natural language processing, and
+        educational assessment to create a tool that truly serves the needs of
+        modern education.
+      </p>
+      <div class="team-member">
+        <i class="fas fa-user-circle"></i>
+        <h3>Development Team</h3>
+        <p>
+          Led by Lionel -
+          <a href="https://github.com/codewith-lionel" target="_blank"
+            >@codewith-lionel</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="about-section">
+    <h2><i class="fas fa-envelope"></i> Get in Touch</h2>
+    <div class="contact-content">
+      <p>Have questions or suggestions? We'd love to hear from you!</p>
+      <div class="contact-buttons">
+        <a
+          href="https://github.com/codewith-lionel/automated-exam-evaluation-system"
+          target="_blank"
+          class="btn btn-primary"
+        >
+          <i class="fab fa-github"></i> View on GitHub
+        </a>
+        <a href="{{ url_for('help_page') }}" class="btn btn-secondary">
+          <i class="fas fa-question-circle"></i> Help & Documentation
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .page-header {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+    margin: -20px -20px 40px -20px;
+  }
+
+  .page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .content-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+
+  .about-section {
+    margin-bottom: 4rem;
+  }
+
+  .about-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+  }
+
+  .mission-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .tech-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+
+  .tech-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .tech-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .tech-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .tech-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .feature-item i {
+    font-size: 1.5rem;
+    color: var(--success-color);
+    margin-top: 0.2rem;
+  }
+
+  .feature-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    color: var(--text-primary);
+  }
+
+  .feature-item p {
+    color: var(--text-secondary);
+  }
+
+  .process-timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -25px;
+    top: 40px;
+    width: 2px;
+    height: calc(100% + 20px);
+    background: var(--border-color);
+  }
+
+  .timeline-item:last-child::before {
+    display: none;
+  }
+
+  .timeline-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .timeline-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .timeline-content p {
+    color: var(--text-secondary);
+  }
+
+  .team-content {
+    text-align: center;
+  }
+
+  .team-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .team-member {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .team-member i {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .team-member h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+  }
+
+  .team-member p {
+    color: var(--text-secondary);
+  }
+
+  .team-member a {
+    color: var(--primary-color);
+  }
+
+  .contact-content {
+    text-align: center;
+  }
+
+  .contact-content p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .contact-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .about-section h2 {
+      font-size: 1.5rem;
+    }
+
+    .tech-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}

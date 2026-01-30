@@ -1,0 +1,11 @@
+Q1: The main aim of Object Oriented Programming (OOP) is to bind together data and the functions that operate on that data, so that no other part of the program can access this data except through these functions. This helps in data security and modular programming.
+
+Q2: A class is a user-defined data type that contains data members and member functions. The data members store data and the member functions define the operations that can be performed on the data. Objects are created using a class to access its members.
+
+Q3: An object is an instance of a class. When a class is defined, no memory is allocated. Memory is allocated only when an object of that class is created.
+
+Q4: Encapsulation in OOP is defined as the binding together of data and the functions that manipulate the data into a single unit. It restricts direct access to some components of an object and improves data security.
+
+Q5: Abstraction means displaying only the essential information and hiding the internal implementation details from the user. Types of Abstraction: Abstraction using classes, Abstraction using header files (Example: math.h → pow()).
+
+Q6: Polymorphism can be defined as the ability of a message or function to be represented in more than one form. Types of Polymorphism: Operator Overloading, Function Overloading.

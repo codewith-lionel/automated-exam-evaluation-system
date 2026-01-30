@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "question_number": 1,
+      "question": "What is the main aim of OOP?",
+      "model_answer": "Object-Oriented Programming is a programming paradigm based on the concept of objects, which contain data in the form of fields (attributes) and code in the form of procedures (methods). OOP focuses on the objects that developers want to manipulate rather than the logic required to manipulate them. Key principles include encapsulation, inheritance, polymorphism, and abstraction.",
+      "max_marks": 10
+    },
+    {
+      "question_number": 2,
+      "question": "Explain what is a class.",
+      "model_answer": "A class is a blueprint or template for creating objects. It defines the structure and behavior that the objects of the class will have. A class contains data members (attributes) and member functions (methods) that define what objects of that class can store and do.",
+      "max_marks": 10
+    },
+    {
+      "question_number": 3,
+      "question": "Explain what is an object.",
+      "model_answer": "An object is an instance of a class - it is a concrete entity created based on the class definition. When a class is defined, no memory is allocated until an object is instantiated. Objects have state (data) and behavior (methods) defined by their class.",
+      "max_marks": 10
+    },
+    {
+      "question_number": 4,
+      "question": "What is encapsulation?",
+      "model_answer": "Encapsulation is the bundling of data and the methods that operate on that data within a single unit (class), and restricting access to some of the object's components. It is important because it provides data hiding, reduces complexity, increases reusability, and makes maintenance easier. Encapsulation is achieved through access modifiers like private, public, and protected.",
+      "max_marks": 10
+    },
+    {
+      "question_number": 5,
+      "question": "What is abstraction?",
+      "model_answer": "Abstraction means displaying only the essential information and hiding the internal implementation details from the user. It focuses on what an object does rather than how it does it. Abstraction can be achieved using abstract classes and interfaces, allowing users to interact with simplified interfaces without knowing complex implementation details.",
+      "max_marks": 10
+    },
+    {
+      "question_number": 6,
+      "question": "What is polymorphism?",
+      "model_answer": "Polymorphism means 'many forms' and allows objects of different classes to be treated as objects of a common parent class. It enables a single interface to represent different underlying forms. There are two types: compile-time polymorphism (method overloading, operator overloading) and runtime polymorphism (method overriding). This allows the same operation to behave differently in different contexts.",
+      "max_marks": 10
+    }
+  ]
+}

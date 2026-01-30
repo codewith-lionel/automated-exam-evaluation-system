@@ -163,7 +163,8 @@ function initUpload() {
         // Disable submit button
         if (uploadButton) {
           uploadButton.disabled = true;
-          uploadButton.innerHTML = '<span class="spinner"></span> Uploading & Extracting...';
+          uploadButton.innerHTML =
+            '<span class="spinner"></span> Uploading & Extracting...';
         }
 
         // Show progress
@@ -182,18 +183,21 @@ function initUpload() {
             ocr_text: response.extracted_text || "",
             confidence: response.confidence || 0,
             answerKey: answerKey,
-            totalMarks: totalMarks
+            totalMarks: totalMarks,
           };
 
           // Show preview section
-          showOCRPreview(currentEvaluationData.ocr_text, currentEvaluationData.confidence);
+          showOCRPreview(
+            currentEvaluationData.ocr_text,
+            currentEvaluationData.confidence,
+          );
 
           // Update buttons
           if (uploadButton) {
-            uploadButton.style.display = 'none';
+            uploadButton.style.display = "none";
           }
-          document.getElementById('evaluateButton').style.display = 'inline-flex';
-
+          document.getElementById("evaluateButton").style.display =
+            "inline-flex";
         } else {
           toast.error(response.message || "Upload failed");
           if (uploadButton) {
@@ -436,45 +440,47 @@ function initUpload() {
 
   // Show OCR Preview
   function showOCRPreview(text, confidence) {
-    const previewSection = document.getElementById('ocrPreviewSection');
-    const extractedTextArea = document.getElementById('extractedText');
-    const charCount = document.getElementById('charCount');
-    const ocrConfidence = document.getElementById('ocrConfidence');
+    const previewSection = document.getElementById("ocrPreviewSection");
+    const extractedTextArea = document.getElementById("extractedText");
+    const charCount = document.getElementById("charCount");
+    const ocrConfidence = document.getElementById("ocrConfidence");
 
     if (!previewSection || !extractedTextArea) return;
 
     extractedTextArea.value = text;
     charCount.textContent = `${text.length} characters`;
-    
+
     if (confidence) {
-      const confidenceClass = confidence > 70 ? 'success' : confidence > 40 ? 'warning' : 'danger';
+      const confidenceClass =
+        confidence > 70 ? "success" : confidence > 40 ? "warning" : "danger";
       ocrConfidence.innerHTML = `<span class="badge badge-${confidenceClass}">OCR Confidence: ${confidence.toFixed(1)}%</span>`;
     }
 
-    previewSection.style.display = 'block';
-    previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    previewSection.style.display = "block";
+    previewSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
     // Update character count on input
-    extractedTextArea.addEventListener('input', () => {
+    extractedTextArea.addEventListener("input", () => {
       charCount.textContent = `${extractedTextArea.value.length} characters`;
     });
   }
 
   // Evaluate button click handler
-  const evaluateButton = document.getElementById('evaluateButton');
+  const evaluateButton = document.getElementById("evaluateButton");
   if (evaluateButton) {
-    evaluateButton.addEventListener('click', async () => {
+    evaluateButton.addEventListener("click", async () => {
       if (!currentEvaluationData) {
-        toast.error('No evaluation data available');
+        toast.error("No evaluation data available");
         return;
       }
 
       evaluateButton.disabled = true;
-      evaluateButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Evaluating...';
+      evaluateButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Evaluating...';
 
       try {
         // Get the (possibly edited) extracted text
-        const extractedText = document.getElementById('extractedText').value;
+        const extractedText = document.getElementById("extractedText").value;
 
         // Parse questions for evaluation
         const questions = parseQuestionsForEvaluation(
@@ -486,7 +492,8 @@ function initUpload() {
         if (questions.length === 0) {
           toast.warning("No questions found. Please provide model answers.");
           evaluateButton.disabled = false;
-          evaluateButton.innerHTML = '<i class="fas fa-check"></i> Proceed to Evaluation';
+          evaluateButton.innerHTML =
+            '<i class="fas fa-check"></i> Proceed to Evaluation';
           return;
         }
 
@@ -507,9 +514,10 @@ function initUpload() {
           selectedFiles = [];
           uploadForm.reset();
           fileList.innerHTML = "";
-          
+
           // Reset current data
-          const evalId = evalResponse.evaluation_id || currentEvaluationData.evaluation_id;
+          const evalId =
+            evalResponse.evaluation_id || currentEvaluationData.evaluation_id;
           currentEvaluationData = null;
 
           // Redirect to results
@@ -519,14 +527,16 @@ function initUpload() {
         } else {
           toast.error(evalResponse.message || "Evaluation failed");
           evaluateButton.disabled = false;
-          evaluateButton.innerHTML = '<i class="fas fa-check"></i> Proceed to Evaluation';
+          evaluateButton.innerHTML =
+            '<i class="fas fa-check"></i> Proceed to Evaluation';
         }
       } catch (error) {
         loader.hide();
         toast.error("Evaluation failed. Please try again.");
         console.error("Evaluation error:", error);
         evaluateButton.disabled = false;
-        evaluateButton.innerHTML = '<i class="fas fa-check"></i> Proceed to Evaluation';
+        evaluateButton.innerHTML =
+          '<i class="fas fa-check"></i> Proceed to Evaluation';
       }
     });
   }

@@ -14,10 +14,10 @@ class Config:
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10MB max file size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
     
-    # Tesseract OCR path (adjust based on OS)
-    # Windows: r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    # Mac/Linux: '/usr/bin/tesseract' or '/usr/local/bin/tesseract'
-    TESSERACT_CMD = r'C:\Users\hp\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+    # OCR Settings
+    OCR_ENGINE = os.environ.get('OCR_ENGINE', 'trocr')  # Options: 'trocr', 'google_vision', 'gemini'
+    GOOGLE_VISION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')  # Google Gemini API key
     
     # Application settings
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'

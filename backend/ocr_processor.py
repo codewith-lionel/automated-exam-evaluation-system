@@ -1,24 +1,189 @@
-"""OCR processor using Tesseract for text extraction from images."""
+"""OCR processor supporting TrOCR and Google Cloud Vision API for text extraction from images."""
 
-import pytesseract
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 import cv2
 import os
 import re
-from config import Config
+import torch
+from io import BytesIO
 
-# Set Tesseract command path - MUST be set before any pytesseract calls
-pytesseract.pytesseract.tesseract_cmd = Config.TESSERACT_CMD
-
-# Verify Tesseract is accessible
+# Initialize Google Gemini API client
+gemini_model = None
 try:
-    version = pytesseract.get_tesseract_version()
-    print(f"Tesseract OCR version {version} configured at: {Config.TESSERACT_CMD}")
+    import google.generativeai as genai
+    from config import Config
+    if Config.GEMINI_API_KEY:
+        genai.configure(api_key=Config.GEMINI_API_KEY)
+        # Use gemini-2.5-flash (latest fast model with vision support)
+        gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+        print("Google Gemini API client initialized successfully")
 except Exception as e:
-    print(f"WARNING: Tesseract configuration issue: {str(e)}")
-    print(f"Expected path: {Config.TESSERACT_CMD}")
-    print(f"Path exists: {os.path.exists(Config.TESSERACT_CMD) if Config.TESSERACT_CMD else False}")
+    print(f"INFO: Google Gemini not available: {str(e)}")
+
+# Initialize Google Cloud Vision API client
+vision_client = None
+try:
+    from google.cloud import vision
+    vision_client = vision.ImageAnnotatorClient()
+    print("Google Cloud Vision API client initialized successfully")
+except Exception as e:
+    print(f"INFO: Google Cloud Vision not available: {str(e)}")
+
+# Initialize TrOCR model and processor
+print("Loading TrOCR model...")
+try:
+    # Use microsoft/trocr-base-handwritten for better handwritten text recognition
+    # Alternative: 'microsoft/trocr-base-printed' for printed text
+    model_name = 'microsoft/trocr-base-handwritten'
+    processor = TrOCRProcessor.from_pretrained(model_name)
+    model = VisionEncoderDecoderModel.from_pretrained(model_name)
+    
+    # Check if GPU is available
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
+    print(f"TrOCR model loaded successfully on {device}")
+except Exception as e:
+    print(f"WARNING: TrOCR initialization issue: {str(e)}")
+    processor = None
+    model = None
+
+
+def process_image_with_trocr(pil_image):
+    """
+    Process a PIL image with TrOCR model.
+    
+    Args:
+        pil_image: PIL Image object
+        
+    Returns:
+        Extracted text as string
+    """
+    try:
+        # Prepare image for model
+        pixel_values = processor(pil_image, return_tensors="pt").pixel_values
+        
+        # Move to same device as model
+        device = next(model.parameters()).device
+        pixel_values = pixel_values.to(device)
+        
+        # Generate text with better parameters
+        with torch.no_grad():
+            generated_ids = model.generate(
+                pixel_values,
+                max_length=512,
+                num_beams=4,
+                early_stopping=True
+            )
+        
+        # Decode text
+        generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        
+        return generated_text
+    
+    except Exception as e:
+        print(f"Error in TrOCR processing: {str(e)}")
+        return ""
+
+
+def split_image_into_patches(image, patch_size=1024, overlap=100):
+    """
+    Split a large image into overlapping patches for processing.
+    
+    Args:
+        image: PIL Image object
+        patch_size: Size of each patch
+        overlap: Overlap between patches
+        
+    Returns:
+        List of PIL Image patches
+    """
+    patches = []
+    width, height = image.size
+    
+    stride = patch_size - overlap
+    
+    for y in range(0, height, stride):
+        for x in range(0, width, stride):
+            # Calculate patch boundaries
+            left = x
+            top = y
+            right = min(x + patch_size, width)
+            bottom = min(y + patch_size, height)
+            
+            # Skip if patch is too small
+            if right - left < 200 or bottom - top < 200:
+                continue
+            
+            # Crop patch
+            patch = image.crop((left, top, right, bottom))
+            patches.append(patch)
+    
+    return patches
+
+
+def extract_text_line_regions(pil_image):
+    """
+    Extract individual text line regions from an image for line-by-line processing.
+    TrOCR works better when processing individual text lines.
+    
+    Args:
+        pil_image: PIL Image object
+        
+    Returns:
+        List of PIL Image objects, one per text line
+    """
+    try:
+        # Convert PIL to OpenCV format
+        img_array = np.array(pil_image)
+        gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+        
+        # Threshold
+        _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        
+        # Use horizontal projection to find text lines
+        height, width = thresh.shape
+        horizontal_projection = np.sum(thresh, axis=1)
+        
+        # Find line boundaries
+        line_regions = []
+        in_line = False
+        line_start = 0
+        threshold = width * 0.05  # Adjust sensitivity
+        
+        for i, value in enumerate(horizontal_projection):
+            if value > threshold and not in_line:
+                # Start of a line
+                line_start = i
+                in_line = True
+            elif value <= threshold and in_line:
+                # End of a line
+                line_end = i
+                in_line = False
+                
+                # Add padding
+                padding = 5
+                y1 = max(0, line_start - padding)
+                y2 = min(height, line_end + padding)
+                
+                # Extract line region
+                if y2 - y1 > 20:  # Minimum line height
+                    line_img = pil_image.crop((0, y1, width, y2))
+                    line_regions.append(line_img)
+        
+        # Handle case where line extends to bottom
+        if in_line:
+            y1 = max(0, line_start - 5)
+            line_img = pil_image.crop((0, y1, width, height))
+            line_regions.append(line_img)
+        
+        print(f"Found {len(line_regions)} text line(s)")
+        return line_regions
+    
+    except Exception as e:
+        print(f"Error extracting text lines: {str(e)}")
+        return []
 
 
 def clean_ocr_text(text):
@@ -69,18 +234,16 @@ def clean_ocr_text(text):
     return text.strip()
 
 
-def preprocess_image(image_path):
+def preprocess_image_for_trocr(image_path):
     """
-    Preprocess image to improve OCR accuracy.
-    Optimized for handwritten text recognition.
+    Preprocess image for TrOCR model.
+    TrOCR requires less aggressive preprocessing than traditional OCR.
     
     Steps:
-    1. Load and upscale image
-    2. Convert to grayscale
-    3. Apply advanced denoising
-    4. Enhance contrast
-    5. Adaptive thresholding
-    6. Morphological operations
+    1. Load image
+    2. Basic denoising
+    3. Light contrast enhancement
+    4. Convert to RGB (TrOCR expects RGB)
     """
     try:
         # Read image with OpenCV
@@ -89,64 +252,171 @@ def preprocess_image(image_path):
         if img is None:
             raise ValueError("Failed to load image")
         
-        # Get image dimensions
-        height, width = img.shape[:2]
+        # Convert BGR to RGB (TrOCR expects RGB)
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
-        # Upscale moderately for better OCR (balanced speed and quality)
-        if height < 1200 or width < 1200:
-            scale = max(1200/height, 1200/width)
-            new_width = int(width * scale)
-            new_height = int(height * scale)
-            img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
-            print(f"Upscaled image from {width}x{height} to {new_width}x{new_height}")
+        # Light denoising only (TrOCR handles noise well)
+        img_rgb = cv2.fastNlMeansDenoisingColored(img_rgb, None, 5, 5, 7, 21)
         
-        # Convert to grayscale
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Light contrast enhancement
+        pil_image = Image.fromarray(img_rgb)
+        enhancer = ImageEnhance.Contrast(pil_image)
+        pil_image = enhancer.enhance(1.2)
         
-        # Apply Non-local Means Denoising (better for handwriting)
-        gray = cv2.fastNlMeansDenoising(gray, None, h=10, templateWindowSize=7, searchWindowSize=21)
-        
-        # Sharpen the image to make text edges clearer
-        kernel_sharpen = np.array([[-1,-1,-1],
-                                   [-1, 9,-1],
-                                   [-1,-1,-1]])
-        gray = cv2.filter2D(gray, -1, kernel_sharpen)
-        
-        # Apply CLAHE for better contrast
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(16,16))
-        gray = clahe.apply(gray)
-        
-        # Use adaptive thresholding (better for varying lighting and handwriting)
-        thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                        cv2.THRESH_BINARY, 21, 10)
-        print(f"Applied Gaussian adaptive thresholding")
-        
-        # Morphological operations to clean up noise
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
-        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=1)
-        
-        # Remove small noise
-        kernel_open = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
-        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel_open, iterations=1)
-        
-        # Ensure text is black on white background
-        if np.mean(thresh) < 127:
-            thresh = cv2.bitwise_not(thresh)
-        
-        # Save preprocessed image
-        preprocessed_path = image_path.replace('.', '_preprocessed.')
-        cv2.imwrite(preprocessed_path, thresh)
-        print(f"Saved preprocessed image: {preprocessed_path}")
-        
-        return preprocessed_path
+        print(f"Preprocessed image: {image_path}")
+        return pil_image
     
     except Exception as e:
         print(f"Error in preprocessing: {str(e)}")
-        return image_path
+        # Return original image as PIL
+        return Image.open(image_path).convert('RGB')
 
-def extract_text_from_image(image_path):
+def extract_text_gemini(image_path):
     """
-    Extract text from image using Tesseract OCR.
+    Extract text from image using Google Gemini AI.
+    
+    Args:
+        image_path: Path to the image file
+        
+    Returns:
+        Extracted text as string
+    """
+    try:
+        if gemini_model is None:
+            raise Exception("Google Gemini API not initialized. Please set GEMINI_API_KEY.")
+        
+        print(f"Processing image with Google Gemini: {image_path}")
+        
+        # Read and prepare image
+        from PIL import Image as PILImage
+        img = PILImage.open(image_path)
+        
+        # Create prompt for OCR
+        prompt = """Extract all text from this image. 
+        
+Rules:
+- Extract ALL visible text exactly as it appears
+- Maintain line breaks and formatting
+- Include handwritten and printed text
+- Do not add any explanations or comments
+- Only output the extracted text"""
+        
+        # Generate content
+        response = gemini_model.generate_content([prompt, img])
+        
+        if response.text:
+            extracted_text = response.text.strip()
+            print(f"Gemini extracted {len(extracted_text)} characters")
+            print(f"Preview: {extracted_text[:200]}...")
+            return clean_ocr_text(extracted_text)
+        else:
+            print("WARNING: No text detected by Gemini")
+            return "Error: No text detected in the image"
+    
+    except Exception as e:
+        error_msg = f"Gemini OCR failed: {str(e)}"
+        print(error_msg)
+        return f"Error: {error_msg}"
+
+
+def extract_text_google_vision(image_path):
+    """
+    Extract text from image using Google Cloud Vision API.
+    
+    Args:
+        image_path: Path to the image file
+        
+    Returns:
+        Extracted text as string
+    """
+    try:
+        if vision_client is None:
+            raise Exception("Google Cloud Vision API not initialized. Please set GOOGLE_APPLICATION_CREDENTIALS.")
+        
+        print(f"Processing image with Google Cloud Vision: {image_path}")
+        
+        # Read the image file
+        with open(image_path, 'rb') as image_file:
+            content = image_file.read()
+        
+        # Create Image object
+        image = vision.Image(content=content)
+        
+        # Perform text detection
+        response = vision_client.text_detection(image=image)
+        texts = response.text_annotations
+        
+        if response.error.message:
+            raise Exception(f'Google Vision API error: {response.error.message}')
+        
+        # Extract full text
+        if texts:
+            extracted_text = texts[0].description
+            print(f"Google Vision extracted {len(extracted_text)} characters")
+            print(f"Preview: {extracted_text[:200]}...")
+            return clean_ocr_text(extracted_text)
+        else:
+            print("WARNING: No text detected by Google Vision")
+            return "Error: No text detected in the image"
+    
+    except Exception as e:
+        error_msg = f"Google Vision OCR failed: {str(e)}"
+        print(error_msg)
+        return f"Error: {error_msg}"
+
+
+def extract_text_from_image(image_path, engine='auto'):
+    """
+    Extract text from image using specified OCR engine.
+    Supports TrOCR (local), Google Cloud Vision (cloud), and Google Gemini (AI).
+    
+    Args:
+        image_path: Path to the image file
+        engine: OCR engine to use ('trocr', 'google_vision', 'gemini', or 'auto')
+               'auto' will use configured engine from environment
+        
+    Returns:
+        Extracted text as string
+    """
+    try:
+        # Determine which engine to use
+        from config import Config
+        
+        if engine == 'auto':
+            engine = Config.OCR_ENGINE
+        
+        print(f"Using OCR engine: {engine}")
+        
+        # Route to appropriate OCR engine
+        if engine == 'gemini':
+            return extract_text_gemini(image_path)
+        elif engine == 'google_vision':
+            return extract_text_google_vision(image_path)
+        elif engine == 'trocr':
+            return extract_text_trocr(image_path)
+        else:
+            # Try Gemini first, then Google Vision, then fallback to TrOCR
+            if gemini_model:
+                try:
+                    return extract_text_gemini(image_path)
+                except Exception as e:
+                    print(f"Gemini failed, trying alternatives: {str(e)}")
+            if vision_client:
+                try:
+                    return extract_text_google_vision(image_path)
+                except Exception as e:
+                    print(f"Google Vision failed, falling back to TrOCR: {str(e)}")
+            return extract_text_trocr(image_path)
+    
+    except Exception as e:
+        error_msg = f"OCR extraction failed: {str(e)}"
+        print(error_msg)
+        return f"Error: {error_msg}"
+
+
+def extract_text_trocr(image_path):
+    """
+    Extract text from image using TrOCR model.
     Optimized for handwritten text.
     
     Args:
@@ -156,40 +426,57 @@ def extract_text_from_image(image_path):
         Extracted text as string
     """
     try:
-        # Verify Tesseract is configured
-        if not pytesseract.pytesseract.tesseract_cmd:
-            raise Exception("Tesseract path not configured in config.py")
-        
-        if not os.path.exists(pytesseract.pytesseract.tesseract_cmd):
-            raise Exception(f"Tesseract not found at: {pytesseract.pytesseract.tesseract_cmd}")
+        # Verify TrOCR model is loaded
+        if processor is None or model is None:
+            raise Exception("TrOCR model not loaded. Please check installation.")
         
         # Preprocess image
-        print(f"Processing image: {image_path}")
-        preprocessed_path = preprocess_image(image_path)
+        print(f"Processing image with TrOCR: {image_path}")
+        pil_image = preprocess_image_for_trocr(image_path)
         
-        # Open image with PIL
-        image = Image.open(preprocessed_path)
+        # Try to detect text lines first
+        text_lines = extract_text_line_regions(pil_image)
         
-        # Use optimized OCR configuration for speed and accuracy
-        # PSM 3 = Fully automatic page segmentation (best for general use)
-        # OEM 1 = LSTM engine (accurate and reasonably fast)
-        config = r'--oem 1 --psm 3'
+        extracted_texts = []
         
-        try:
-            # Extract text with optimized config
-            best_text = pytesseract.image_to_string(image, config=config, lang='eng')
-            best_config = config
+        if text_lines and len(text_lines) > 1:
+            # Process line by line
+            print(f"Processing {len(text_lines)} detected text lines")
             
-            print(f"OCR completed: {len(best_text)} chars extracted")
-                    
-        except Exception as e:
-            print(f"OCR extraction failed: {str(e)}")
-            best_text = ""
-            best_config = config
+            for i, line_img in enumerate(text_lines):
+                try:
+                    text = process_image_with_trocr(line_img)
+                    if text.strip():
+                        extracted_texts.append(text)
+                        print(f"Line {i+1}/{len(text_lines)}: '{text[:50]}...'")
+                except Exception as e:
+                    print(f"Error processing line {i+1}: {str(e)}")
+        else:
+            # Fall back to horizontal strips for full-page processing
+            width, height = pil_image.size
+            strip_height = 384  # TrOCR works well with this height
+            num_strips = (height + strip_height - 1) // strip_height
+            
+            print(f"Processing image in {num_strips} horizontal strip(s)")
+            
+            for i in range(num_strips):
+                y_start = i * strip_height
+                y_end = min((i + 1) * strip_height, height)
+                
+                strip = pil_image.crop((0, y_start, width, y_end))
+                
+                try:
+                    text = process_image_with_trocr(strip)
+                    if text.strip():
+                        extracted_texts.append(text)
+                        print(f"Strip {i+1}/{num_strips}: '{text[:50]}...'")
+                except Exception as e:
+                    print(f"Error processing strip {i+1}: {str(e)}")
         
-        # Clean up preprocessed image
-        if preprocessed_path != image_path and os.path.exists(preprocessed_path):
-            os.remove(preprocessed_path)
+        # Join with newlines for line-based, spaces for strip-based
+        best_text = '\n'.join(extracted_texts) if text_lines and len(text_lines) > 1 else ' '.join(extracted_texts)
+        
+        print(f"OCR completed: {len(best_text)} chars extracted")
         
         if not best_text or len(best_text.strip()) < 10:
             print("WARNING: Very little text extracted. Image may be of poor quality or empty.")
@@ -197,7 +484,6 @@ def extract_text_from_image(image_path):
         
         # Clean the extracted text
         result = clean_ocr_text(best_text)
-        print(f"Best config: {best_config}")
         print(f"Extracted {len(result)} characters (cleaned from {len(best_text)})")
         print(f"Preview: {result[:200]}...")
         
@@ -206,7 +492,6 @@ def extract_text_from_image(image_path):
     except Exception as e:
         error_msg = f"OCR extraction failed: {str(e)}"
         print(error_msg)
-        print(f"Tesseract path: {pytesseract.pytesseract.tesseract_cmd}")
         print(f"Image path: {image_path}")
         print(f"Image exists: {os.path.exists(image_path)}")
         return f"Error: {error_msg}"

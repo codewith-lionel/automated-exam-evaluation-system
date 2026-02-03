@@ -1,9 +1,13 @@
 Flask==3.0.0
 Pillow>=10.4.0
-pytesseract==0.3.10
 nltk==3.9.2
 scikit-learn>=1.5.0
 reportlab==4.0.7
 werkzeug==3.0.1
 numpy>=1.26.0
 opencv-python>=4.10.0
+transformers>=4.30.0
+torch>=2.0.0
+sentencepiece>=0.1.99
+google-cloud-vision>=3.4.0
+google-generativeai>=0.3.0

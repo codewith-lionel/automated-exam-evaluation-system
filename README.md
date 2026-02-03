@@ -12,7 +12,7 @@ A comprehensive web-based automated examination evaluation system that uses OCR 
 
 - 🔐 **Secure Authentication** - Role-based access control (Admin/Teacher and Student)
 - 📤 **Smart Upload System** - Drag-and-drop file upload with support for PNG, JPG, JPEG, PDF
-- 🔍 **OCR Processing** - Extract text from scanned exam papers using Tesseract OCR
+- 🔍 **Dual OCR Engines** - Choose between TrOCR (local, free) or Google Cloud Vision API (cloud, powerful)
 - 🤖 **NLP Evaluation** - Intelligent answer evaluation using NLTK and scikit-learn
 - 📊 **Visual Results** - Interactive charts and detailed breakdowns with Chart.js
 - 💬 **Feedback System** - Categorized feedback with strengths, improvements, and suggestions
@@ -45,34 +45,7 @@ Before installation, ensure you have the following installed:
    git --version
    ```
 
-3. **Tesseract OCR** (Required for OCR functionality)
-
-   **Windows:**
-   - Download installer from: https://github.com/UB-Mannheim/tesseract/wiki
-   - Install to default location: `C:\Program Files\Tesseract-OCR\`
-   - Add to PATH or update `config.py` with installation path
-
-   **macOS:**
-
-   ```bash
-   brew install tesseract
-   ```
-
-   **Linux (Ubuntu/Debian):**
-
-   ```bash
-   sudo apt update
-   sudo apt install tesseract-ocr
-   sudo apt install libtesseract-dev
-   ```
-
-   **Verify installation:**
-
-   ```bash
-   tesseract --version
-   ```
-
-### Installation
+## 🚀 Installation
 
 1. **Clone the repository**
 
@@ -97,22 +70,39 @@ Before installation, ensure you have the following installed:
    source venv/bin/activate
    ```
 
-3. **Install Python dependencies**
+3. **OCR Engine Setup (Optional)**
+
+   The system supports two OCR engines:
+
+   **Option 1: TrOCR (Default - No Setup Required)**
+   - Works out of the box
+   - Free and local
+   - Good for handwritten text
+   - No internet required
+
+   **Option 2: Google Cloud Vision API (Recommended for Production)**
+   - Superior accuracy for all text types
+   - Cloud-based processing
+   - Free tier: 1,000 images/month
+   - Requires API key setup
+
+   To enable Google Cloud Vision:
+   ```bash
+   # See detailed instructions
+   See GOOGLE_VISION_SETUP.md
+
+   # Quick setup with credentials file
+   setup_google_vision.bat "path\to\your\credentials.json"
+
+   # Or set environment variables manually
+   $env:GOOGLE_APPLICATION_CREDENTIALS="path\to\credentials.json"
+   $env:OCR_ENGINE="google_vision"
+   ```
+
+4. **Install Python dependencies**
 
    ```bash
    pip install -r requirements.txt
-   ```
-
-4. **Configure Tesseract path (if needed)**
-
-   Edit `config.py` and update the `TESSERACT_CMD` path:
-
-   ```python
-   # Windows
-   TESSERACT_CMD = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-   # macOS/Linux (usually auto-detected)
-   TESSERACT_CMD = '/usr/bin/tesseract'  # or '/usr/local/bin/tesseract'
    ```
 
 5. **Download NLTK data**

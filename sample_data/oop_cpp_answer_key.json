@@ -1,0 +1,10 @@
+{
+  "questions": [
+    {
+      "question_number": 1,
+      "question": "Explain Object-Oriented Programming (OOP) in C++ with its main concepts.",
+      "model_answer": "The main aim of OOP is to bind together the data and the functions that operate on them so that no other part of the code can access this data except through these functions. Class is a user-defined data type which holds its own data members and member functions, which can be accessed and used by creating an instance of that class. Object is created when a class is instantiated and memory is allocated. When a class is defined, no memory is allocated but when it is instantiated, memory is allocated. Encapsulation in OOP is defined as binding together the data and the functions that manipulate them. Abstraction means displaying only essential information and hiding the details. Abstraction can be achieved using classes with pure virtual functions and using header files like math.h with functions like pow(). Polymorphism means the ability of a message to be displayed in more than one form. It can be achieved through operator overloading and function overloading. For example, function overloading allows multiple functions with same name but different parameters like int sum(10, 20) and int sum(10, 20, 30).",
+      "max_marks": 100
+    }
+  ]
+}

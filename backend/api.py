@@ -124,7 +124,19 @@ def upload_exam():
         # Process file based on mode
         if mode == 'offline':
             # Extract text using OCR
+            print(f"Starting OCR extraction for file: {filepath}")
             extracted_text = process_uploaded_file(filepath)
+            print(f"OCR extraction completed. Text length: {len(extracted_text) if extracted_text else 0}")
+            
+            # Check if extraction was successful
+            if not extracted_text or extracted_text.startswith("Error:"):
+                error_message = extracted_text if extracted_text else "No text extracted"
+                print(f"OCR extraction failed: {error_message}")
+                return jsonify({
+                    'success': False,
+                    'message': f'OCR extraction failed: {error_message}',
+                    'evaluation_id': evaluation_id
+                }), 200
             
             return jsonify({
                 'success': True,

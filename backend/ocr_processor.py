@@ -22,32 +22,11 @@ try:
 except Exception as e:
     print(f"INFO: Google Gemini not available: {str(e)}")
 
-# Initialize Google Cloud Vision API client
+# Google Cloud Vision and TrOCR disabled - using Gemini only
 vision_client = None
-try:
-    from google.cloud import vision
-    vision_client = vision.ImageAnnotatorClient()
-    print("Google Cloud Vision API client initialized successfully")
-except Exception as e:
-    print(f"INFO: Google Cloud Vision not available: {str(e)}")
-
-# Initialize TrOCR model and processor
-print("Loading TrOCR model...")
-try:
-    # Use microsoft/trocr-base-handwritten for better handwritten text recognition
-    # Alternative: 'microsoft/trocr-base-printed' for printed text
-    model_name = 'microsoft/trocr-base-handwritten'
-    processor = TrOCRProcessor.from_pretrained(model_name)
-    model = VisionEncoderDecoderModel.from_pretrained(model_name)
-    
-    # Check if GPU is available
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.to(device)
-    print(f"TrOCR model loaded successfully on {device}")
-except Exception as e:
-    print(f"WARNING: TrOCR initialization issue: {str(e)}")
-    processor = None
-    model = None
+processor = None
+model = None
+print("Using Google Gemini for OCR (TrOCR and Google Vision disabled)")
 
 
 def process_image_with_trocr(pil_image):
@@ -283,13 +262,18 @@ def extract_text_gemini(image_path):
     """
     try:
         if gemini_model is None:
-            raise Exception("Google Gemini API not initialized. Please set GEMINI_API_KEY.")
+            raise Exception("Google Gemini API not initialized. Please set GEMINI_API_KEY in .env file.")
         
         print(f"Processing image with Google Gemini: {image_path}")
+        
+        # Verify file exists
+        if not os.path.exists(image_path):
+            raise Exception(f"Image file not found: {image_path}")
         
         # Read and prepare image
         from PIL import Image as PILImage
         img = PILImage.open(image_path)
+        print(f"Image loaded: {img.size} pixels, mode: {img.mode}")
         
         # Create prompt for OCR
         prompt = """Extract all text from this image. 
@@ -301,21 +285,27 @@ Rules:
 - Do not add any explanations or comments
 - Only output the extracted text"""
         
+        print("Sending request to Gemini API...")
         # Generate content
         response = gemini_model.generate_content([prompt, img])
+        print("Response received from Gemini API")
         
         if response.text:
             extracted_text = response.text.strip()
             print(f"Gemini extracted {len(extracted_text)} characters")
             print(f"Preview: {extracted_text[:200]}...")
-            return clean_ocr_text(extracted_text)
+            cleaned_text = clean_ocr_text(extracted_text)
+            print(f"After cleaning: {len(cleaned_text)} characters")
+            return cleaned_text
         else:
             print("WARNING: No text detected by Gemini")
-            return "Error: No text detected in the image"
+            return "Error: No text detected in the image. Please ensure the image contains readable text."
     
     except Exception as e:
         error_msg = f"Gemini OCR failed: {str(e)}"
         print(error_msg)
+        import traceback
+        traceback.print_exc()
         return f"Error: {error_msg}"
 
 
@@ -387,26 +377,16 @@ def extract_text_from_image(image_path, engine='auto'):
         
         print(f"Using OCR engine: {engine}")
         
-        # Route to appropriate OCR engine
-        if engine == 'gemini':
+        # Route to appropriate OCR engine (Gemini only)
+        if engine == 'gemini' or engine == 'auto':
             return extract_text_gemini(image_path)
         elif engine == 'google_vision':
-            return extract_text_google_vision(image_path)
+            return "Error: Google Vision is disabled. Using Gemini only."
         elif engine == 'trocr':
-            return extract_text_trocr(image_path)
+            return "Error: TrOCR is disabled. Using Gemini only."
         else:
-            # Try Gemini first, then Google Vision, then fallback to TrOCR
-            if gemini_model:
-                try:
-                    return extract_text_gemini(image_path)
-                except Exception as e:
-                    print(f"Gemini failed, trying alternatives: {str(e)}")
-            if vision_client:
-                try:
-                    return extract_text_google_vision(image_path)
-                except Exception as e:
-                    print(f"Google Vision failed, falling back to TrOCR: {str(e)}")
-            return extract_text_trocr(image_path)
+            # Always use Gemini
+            return extract_text_gemini(image_path)
     
     except Exception as e:
         error_msg = f"OCR extraction failed: {str(e)}"

@@ -174,13 +174,21 @@ function initUpload() {
         const response = await uploadWithProgress(formData);
         hideUploadProgress();
 
+        console.log("Upload response:", response);
+
         if (response.success) {
-          toast.success("Text extracted successfully!");
+          const extractedText = response.extracted_text || "";
+          
+          if (extractedText && extractedText.trim()) {
+            toast.success("Text extracted successfully!");
+          } else {
+            toast.warning("File uploaded but no text was extracted. Please check the image quality.");
+          }
 
           // Store data for later evaluation
           currentEvaluationData = {
             evaluation_id: response.evaluation_id,
-            ocr_text: response.extracted_text || "",
+            ocr_text: extractedText,
             confidence: response.confidence || 0,
             answerKey: answerKey,
             totalMarks: totalMarks,
@@ -282,6 +290,13 @@ function initUpload() {
 
     if (percentText) {
       percentText.textContent = `${Math.round(percent)}%`;
+    }
+  }
+
+  // Hide upload progress
+  function hideUploadProgress() {
+    if (fileList) {
+      fileList.innerHTML = "";
     }
   }
 

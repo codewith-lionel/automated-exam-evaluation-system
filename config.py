@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
     """Application configuration settings."""
@@ -15,7 +19,7 @@ class Config:
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
     
     # OCR Settings
-    OCR_ENGINE = os.environ.get('OCR_ENGINE', 'trocr')  # Options: 'trocr', 'google_vision', 'gemini'
+    OCR_ENGINE = os.environ.get('OCR_ENGINE', 'gemini')  # Options: 'trocr', 'google_vision', 'gemini'
     GOOGLE_VISION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')  # Google Gemini API key
     
